@@ -118,7 +118,9 @@ void doubleClick()
  * When long press start, device will call this function
  */
 void longPressStart()
-{    
+{
+    rainbowDisplay1();
+
     BLINKER_LOG1("Button long press start!");
 }
 
