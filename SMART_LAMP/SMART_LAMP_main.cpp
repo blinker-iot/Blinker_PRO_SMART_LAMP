@@ -95,6 +95,8 @@ void buttonTick()
  */
 void singalClick()
 {
+    modeChange();
+    
     BLINKER_LOG1("Button clicked!");
 }
 
@@ -105,6 +107,8 @@ void singalClick()
  */
 void doubleClick()
 {
+    setBrightness(random(0, 255));
+    
     BLINKER_LOG1("Button double clicked!");
 }
 
@@ -114,7 +118,7 @@ void doubleClick()
  * When long press start, device will call this function
  */
 void longPressStart()
-{
+{    
     BLINKER_LOG1("Button long press start!");
 }
 

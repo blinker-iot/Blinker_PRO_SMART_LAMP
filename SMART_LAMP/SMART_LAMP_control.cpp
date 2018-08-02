@@ -12,14 +12,40 @@
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 WS2812FX ws2812fx = WS2812FX(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_RGB + NEO_KHZ800);
 
-void ledInit()
+static bool change = false;
+
+void setBrightness(uint8 bright)
 {
-    ws2812fx.init();
+    ws2812fx.setBrightness(bright);
+}
+
+void modeChange()
+{
+    (change ? rainbowDisplay1() : rainbowDisplay2());
+
+    change = !change;
+}
+
+void rainbowDisplay2()
+{
+    ws2812fx.setBrightness(255);
+    ws2812fx.setSpeed(5000);
+    ws2812fx.setColor(0x007BFF);
+    ws2812fx.setMode(FX_MODE_RAINBOW);
+}
+
+void rainbowDisplay1()
+{
     ws2812fx.setBrightness(255);
     ws2812fx.setSpeed(1000);
     ws2812fx.setColor(0x007BFF);
-    //ws2812fx.setMode(FX_MODE_STATIC);
-    ws2812fx.setMode(12);
+    ws2812fx.setMode(FX_MODE_RAINBOW_CYCLE);
+}
+
+void ledInit()
+{
+    ws2812fx.init();
+    rainbowDisplay1();
     ws2812fx.start();
 }
 
