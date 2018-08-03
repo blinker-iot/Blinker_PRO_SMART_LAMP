@@ -17,4 +17,11 @@
 #define BLINKER_BAT_POWER_USEUP 0.2
 #define BLINKER_BAT_CHECK_TIME 10000UL
 
+#define BLINKER_LAMP_TYPE_COUNT 2
+
+#define BLINKER_LAMP_RAINBOW 0
+#define BLINKER_LAMP_RAINBOW_CYCLE 1
+
+typedef void (*callback_with_uint32_arg_t)(uint32_t data);
+
 #endif

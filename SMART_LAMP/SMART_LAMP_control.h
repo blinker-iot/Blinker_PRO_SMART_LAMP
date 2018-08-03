@@ -3,6 +3,10 @@
 
 #include "SMART_LAMP_config.h"
 
+void attachDelay(callback_with_uint32_arg_t newFunc);
+
+void lampDelay(uint32_t ms);
+
 void setBrightness(uint8_t bright);
 
 void modeChange();

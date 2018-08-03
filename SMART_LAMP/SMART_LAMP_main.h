@@ -1,7 +1,7 @@
 #ifndef BLINKER_LAMP_H
 #define BLINKER_LAMP_H
 
-#include "arduino.h"
+#include "SMART_LAMP_config.h"
 
 double getBAT();
 

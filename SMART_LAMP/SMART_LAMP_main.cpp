@@ -191,6 +191,11 @@ void batCheck()
     }
 }
 
+void delays(uint32_t ms)
+{
+    Blinker.delay(ms);
+}
+
 void hardwareInit()
 {
     pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
@@ -222,12 +227,14 @@ void LAMP_init()
 
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
 #endif
+
+    attachDelay(delays);
 }
 
 void LAMP_run()
 {
-    Blinker.run();
+    // Blinker.run();
 
     ledRun();
-    batCheck();
+    // batCheck();
 }
