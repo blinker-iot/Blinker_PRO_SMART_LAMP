@@ -9,7 +9,7 @@ You should have the following ready before beginning with any board:
 * [Arduino IDE](https://www.arduino.cc/en/Main/Software) 1.6.12 or later
 * Install the [esp8266/arduino](https://github.com/esp8266/arduino) core via the Arduino IDE Boards Manager
 * Install the [blinker-library](https://github.com/blinker-iot/blinker-library) via the Arduino Library Manager  
-* Install the [WS2812FX](https://github.com/kitesurfer1404/WS2812FX) via the Arduino Library Manager  
+* Install the [Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) via the Arduino Library Manager  
 
 
 # Hardware Needs
