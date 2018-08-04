@@ -22,6 +22,8 @@
 #define BLINKER_LAMP_RAINBOW 0
 #define BLINKER_LAMP_RAINBOW_CYCLE 1
 
+#define BLINKER_LAMP_SPEED_DEFUALT 5000UL
+
 typedef void (*callback_with_uint32_arg_t)(uint32_t data);
 
 #endif

@@ -35,15 +35,33 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812
 
 static bool change = false;
 static uint8_t lampType = BLINKER_LAMP_RAINBOW_CYCLE;
-static uint8_t lampSpeed = 2000UL;
 static uint8_t lampStep = 0;
+static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
+static uint32_t freshStart = 0;
 
 static callback_with_uint32_arg_t _lampDelay = NULL;
 
+bool needFresh()
+{
+    yield();
+
+    if (lampSpeed < 256) lampSpeed = 256;
+
+    if ((millis() - freshStart) >= (lampSpeed / 256)) {
+        freshStart = millis();
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 void lampFresh(uint32_t ms)
 {
-    ms = ms / strip.numPixels();
+    ms = ms * BLINKER_WS2812_COUNT / 256;
     
+    // while(!needFresh());
+
     if (_lampDelay) {
         _lampDelay(ms);
     }
@@ -69,7 +87,7 @@ void colorWipe(uint32_t c, uint8_t wait) {
     for(uint16_t i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, c);
         strip.show();
-        lampFresh(wait);
+        // lampFresh(wait);
     }
 }
 
@@ -77,20 +95,20 @@ void rainbow() {
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel((i + lampStep) & 255));
     }
-    lampStep = lampStep + 1 & 0xFF;
+    lampStep = (lampStep + 1) & 0xFF;
 
     strip.show();
-    lampFresh(lampSpeed);
+    // lampFresh(lampSpeed);
 }
 
 void rainbowCycle() {
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + lampStep) & 255));
     }
-    lampStep = lampStep + 1 & 0xFF;
+    lampStep = (lampStep + 1) & 0xFF;
 
     strip.show();
-    lampFresh(lampSpeed);
+    // lampFresh(lampSpeed);
 }
 
 void attachDelay(callback_with_uint32_arg_t newFunc)
@@ -153,6 +171,8 @@ void ledRun()
 
     // rainbow(20);
     // colorWipe(strip.Color(255, 0, 0), 50);
+    
+    if (!needFresh()) return;
 
     switch(lampType) {
         case BLINKER_LAMP_RAINBOW :

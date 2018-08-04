@@ -233,7 +233,7 @@ void LAMP_init()
 
 void LAMP_run()
 {
-    // Blinker.run();
+    Blinker.run();
 
     ledRun();
     // batCheck();
