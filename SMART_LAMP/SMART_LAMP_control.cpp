@@ -34,10 +34,12 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
 static bool change = false;
-static uint8_t lampType = BLINKER_LAMP_RAINBOW_CYCLE;
-static uint8_t lampStep = 0;
+static uint8_t lampType = 2;//BLINKER_LAMP_RAINBOW_CYCLE;
+static uint32_t lampStep = 0;
 static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
+static uint32_t breath_color[3] = {0xff0000, 0x00ff00, 0x0000ff};
+static uint8_t bc_num = 0;
 
 static callback_with_uint32_arg_t _lampDelay = NULL;
 
@@ -70,7 +72,8 @@ void lampFresh(uint32_t ms)
     }
 }
 
-uint32_t Wheel(byte WheelPos) {
+uint32_t Wheel(byte WheelPos)
+{
     WheelPos = 255 - WheelPos;
     if(WheelPos < 85) {
         return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
@@ -83,7 +86,8 @@ uint32_t Wheel(byte WheelPos) {
     return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
-void colorWipe(uint32_t c, uint8_t wait) {
+void colorWipe(uint32_t c, uint8_t wait)
+{
     for(uint16_t i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, c);
         strip.show();
@@ -91,7 +95,8 @@ void colorWipe(uint32_t c, uint8_t wait) {
     }
 }
 
-void rainbow() {
+void rainbow()
+{
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel((i + lampStep) & 255));
     }
@@ -109,6 +114,65 @@ void rainbowCycle() {
 
     strip.show();
     // lampFresh(lampSpeed);
+}
+
+// uint32_t breath(uint32_t c) {
+uint32_t breath() {
+    if (lampStep == 0) bc_num = (bc_num + 1) % 3;
+
+    int lum = lampStep;
+
+    uint16_t start_lum = 64;
+    uint16_t end_lum = 448;
+
+    uint32_t c = breath_color[bc_num];
+
+    uint8_t now_r = (c >> 16 & 0xFF);
+    uint8_t now_g = (c >>  8 & 0xFF);
+    uint8_t now_b = (c       & 0xFF);
+
+    uint8_t next_num = (bc_num + 1) % 3;
+
+    if (lum < end_lum) next_num = (bc_num + 2) % 3;
+
+    uint32_t next_c = breath_color[next_num];
+
+    uint8_t next_r = (next_c >> 16 & 0xFF);
+    uint8_t next_g = (next_c >>  8 & 0xFF);
+    uint8_t next_b = (next_c       & 0xFF);
+
+    uint8_t r, g, b;
+
+    if (lum < start_lum) {
+        r = next_r;
+        g = next_g;
+        b = next_b;
+    }
+    else if (lum >= start_lum && lum <= end_lum){
+        r = (next_r - (next_r - now_r) * (lum - start_lum) / (end_lum - start_lum));
+        g = (next_g - (next_g - now_g) * (lum - start_lum) / (end_lum - start_lum));
+        b = (next_b - (next_b - now_b) * (lum - start_lum) / (end_lum - start_lum));
+    }
+    else {
+        r = now_r;
+        g = now_g;
+        b = now_b;
+    }
+
+    uint16_t _delay = 5;
+
+    if (lum > start_lum && lum < end_lum) _delay = 20;
+
+    for(uint8_t i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
+
+    lampStep += 2;
+    if(lampStep > 512) lampStep = 0;
+
+    return _delay;
 }
 
 void attachDelay(callback_with_uint32_arg_t newFunc)
@@ -130,6 +194,9 @@ void modeChange()
     // change = !change;
 
     lampType = (lampType + 1) % BLINKER_LAMP_TYPE_COUNT;
+    lampStep = 0;
+
+    Serial.println(lampType);
 }
 
 void rainbowDisplay2()
@@ -181,6 +248,8 @@ void ledRun()
         case BLINKER_LAMP_RAINBOW_CYCLE :
             rainbowCycle();
             break;
+        case BLINKER_LAMP_BREATH :
+            lampSpeed = breath() * 256;
         default :
             break;
     }
