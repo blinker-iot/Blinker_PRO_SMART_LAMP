@@ -38,8 +38,9 @@ static uint8_t lampType = 2;//BLINKER_LAMP_RAINBOW_CYCLE;
 static uint32_t lampStep = 0;
 static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
-static uint32_t breath_color[3] = {0xff0000, 0x00ff00, 0x0000ff};
-static uint8_t bc_num = 0;
+static uint32_t stream_color[3] = {0xff0000, 0x00ff00, 0x0000ff};
+static uint8_t stream_num = 0;
+static uint8_t stream_count = 3;
 
 static callback_with_uint32_arg_t _lampDelay = NULL;
 
@@ -116,26 +117,26 @@ void rainbowCycle() {
     // lampFresh(lampSpeed);
 }
 
-// uint32_t breath(uint32_t c) {
-uint32_t breath() {
-    if (lampStep == 0) bc_num = (bc_num + 1) % 3;
+// uint32_t streamer(uint32_t c) {
+uint32_t streamer() {
+    if (lampStep == 0) stream_num = (stream_num + 1) % stream_count;
 
     int lum = lampStep;
 
     uint16_t start_lum = 64;
     uint16_t end_lum = 448;
 
-    uint32_t c = breath_color[bc_num];
+    uint32_t c = stream_color[stream_num];
 
     uint8_t now_r = (c >> 16 & 0xFF);
     uint8_t now_g = (c >>  8 & 0xFF);
     uint8_t now_b = (c       & 0xFF);
 
-    uint8_t next_num = (bc_num + 1) % 3;
+    uint8_t next_num = (stream_num + 1) % stream_count;
 
-    if (lum < end_lum) next_num = (bc_num + 2) % 3;
+    if (lum < end_lum) next_num = (stream_num + stream_count - 1) % stream_count;
 
-    uint32_t next_c = breath_color[next_num];
+    uint32_t next_c = stream_color[next_num];
 
     uint8_t next_r = (next_c >> 16 & 0xFF);
     uint8_t next_g = (next_c >>  8 & 0xFF);
@@ -161,7 +162,7 @@ uint32_t breath() {
 
     uint16_t _delay = 5;
 
-    if (lum > start_lum && lum < end_lum) _delay = 20;
+    if (lum < start_lum || lum > end_lum) _delay = 20;
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -249,7 +250,7 @@ void ledRun()
             rainbowCycle();
             break;
         case BLINKER_LAMP_BREATH :
-            lampSpeed = breath() * 256;
+            lampSpeed = streamer() * 256;
         default :
             break;
     }
