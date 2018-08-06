@@ -34,13 +34,16 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
 static bool change = false;
-static uint8_t lampType = 2;//BLINKER_LAMP_RAINBOW_CYCLE;
+static uint8_t lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 static uint32_t lampStep = 0;
 static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
+
 static uint32_t stream_color[3] = {0xff0000, 0x00ff00, 0x0000ff};
 static uint8_t stream_num = 0;
 static uint8_t stream_count = 3;
+
+static uint32_t standard_color = 0x88ff0088;
 
 static callback_with_uint32_arg_t _lampDelay = NULL;
 
@@ -118,7 +121,7 @@ void rainbowCycle() {
 }
 
 // uint32_t streamer(uint32_t c) {
-uint32_t streamer() {
+uint8_t streamer() {
     if (lampStep == 0) stream_num = (stream_num + 1) % stream_count;
 
     int lum = lampStep;
@@ -172,6 +175,82 @@ uint32_t streamer() {
 
     lampStep += 2;
     if(lampStep > 512) lampStep = 0;
+
+    return _delay;
+}
+
+void standard()
+{
+    uint8_t lum = (standard_color >> 24 & 0xFF);
+    uint8_t r   = (standard_color >> 16 & 0xFF) * lum / 256;
+    uint8_t g   = (standard_color >>  8 & 0xFF) * lum / 256;
+    uint8_t b   = (standard_color       & 0xFF) * lum / 256;
+
+    for(uint8_t i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
+}
+
+uint16_t breath()
+{
+    int lum = lampStep;
+    if(lum > 255) lum = 511 - lum; // lum = 15 -> 255 -> 15
+
+    uint16_t _delay;
+    if(lum == 15) _delay = 970; // 970 pause before each breath
+    else if(lum <=  25 && lum > 15) _delay = 38; // 19
+    else if(lum <=  50 && lum > 25) _delay = 36; // 18
+    else if(lum <=  75 && lum > 50) _delay = 28; // 14
+    else if(lum <= 100 && lum > 75) _delay = 20; // 10
+    else if(lum <= 125 && lum > 100) _delay = 14; // 7
+    else if(lum <= 150 && lum > 125) _delay = 11; // 5
+    else _delay = 10; // 4
+
+    // uint32_t color = SEGMENT.colors[0];
+    // uint8_t w = (standard_color >> 24 & 0xFF) * lum / 256;
+    uint8_t r = (standard_color >> 16 & 0xFF) * lum / 256;
+    uint8_t g = (standard_color >>  8 & 0xFF) * lum / 256;
+    uint8_t b = (standard_color       & 0xFF) * lum / 256;
+    for(uint16_t i = 0; i <= strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
+
+    lampStep += 2;
+    if(lampStep > (512-15)) lampStep = 15;
+
+    return _delay;
+}
+
+uint16_t rainbowStrobe()
+{
+    uint32_t c;
+    uint16_t _delay;
+    if (lampStep % 2) {
+        // c = Wheel(lampStep);
+        c = Wheel(random(0, 255));
+        _delay = 20;
+    }
+    else {
+        c = 0;
+        _delay = 1000;
+    }
+
+    if (lampStep == 255) lampStep = 0;
+    else lampStep++;
+    
+    uint8_t r = (c >> 16 & 0xFF);
+    uint8_t g = (c >>  8 & 0xFF);
+    uint8_t b = (c       & 0xFF);
+    
+    for(uint16_t i = 0; i <= strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
 
     return _delay;
 }
@@ -243,14 +322,24 @@ void ledRun()
     if (!needFresh()) return;
 
     switch(lampType) {
-        case BLINKER_LAMP_RAINBOW :
-            rainbow();
-            break;
         case BLINKER_LAMP_RAINBOW_CYCLE :
             rainbowCycle();
             break;
+        case BLINKER_LAMP_RAINBOW :
+            rainbow();
+            break;
+        case BLINKER_LAMP_RAINBOW_STROBE :
+            lampSpeed = rainbowStrobe() * 256;
+            break;
+        case BLINKER_LAMP_STANDARD :
+            standard();
+            break;
         case BLINKER_LAMP_BREATH :
+            lampSpeed = breath() * 256;
+            break;
+        case BLINKER_LAMP_STREAMER :
             lampSpeed = streamer() * 256;
+            break;
         default :
             break;
     }
