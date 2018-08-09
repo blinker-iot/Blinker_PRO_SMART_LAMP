@@ -46,12 +46,47 @@ bool dataParse(const JsonObject & data)
 
         DynamicJsonBuffer jsonBuffer;
         JsonObject& setJson = jsonBuffer.parseObject(setData);
+
+        if (!setJson.success()) {
+            return false;
+        }
+
+        String setMode = setJson[BLINKER_CMD_LAMP_MODE];
+
+        if (setMode == BLINKER_CMD_LAMP_RAINBOW_CYCLE) {
+            setMode(BLINKER_LAMP_RAINBOW_CYCLE);
+            isParsed = true;
+        }
+        else if (setMode == BLINKER_CMD_LAMP_RAINBOW) {
+            setMode(BLINKER_LAMP_RAINBOW);
+            isParsed = true;
+        }
+        else if (setMode == BLINKER_CMD_LAMP_RAINBOW_STROBE) {
+            setMode(BLINKER_LAMP_RAINBOW_STROBE);
+            isParsed = true;
+        }
+        else if (setMode == BLINKER_CMD_LAMP_STANDARD) {
+            setMode(BLINKER_LAMP_STANDARD);
+            isParsed = true;
+        }
+        else if (setMode == BLINKER_CMD_LAMP_BREATH) {
+            setMode(BLINKER_LAMP_BREATH);
+            isParsed = true;
+        }
+        else if (setMode == BLINKER_CMD_LAMP_STREAMER) {
+            setMode(BLINKER_LAMP_STREAMER);
+            isParsed = true;
+        }
     }
     else if (data.containsKey(BLINKER_CMD_GET)) {
         String getData = data[BLINKER_CMD_GET];
 
         DynamicJsonBuffer jsonBuffer;
         JsonObject& getJson = jsonBuffer.parseObject(getData);
+
+        if (!getJson.success()) {
+            return false;
+        }
     }
 
     if (isParsed) {
@@ -119,7 +154,7 @@ void doubleClick()
  */
 void longPressStart()
 {
-    rainbowDisplay1();
+    rainbowCycle();
 
     BLINKER_LOG1("Button long press start!");
 }
@@ -213,7 +248,7 @@ void LAMP_init()
     hardwareInit();
     ledInit();
     
-    Blinker.begin(BLINKER_AIR_DETECTOR);
+    Blinker.begin(BLINKER_SMART_LAMP);
 
     Blinker.attachParse(dataParse);
     Blinker.attachHeartbeat(heartbeat);

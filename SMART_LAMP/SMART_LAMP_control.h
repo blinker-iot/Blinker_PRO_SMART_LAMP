@@ -11,9 +11,11 @@ void setBrightness(uint8_t bright);
 
 void modeChange();
 
-void rainbowDisplay2();
+void rainbow();
 
-void rainbowDisplay1();
+void rainbowCycle();
+
+void setMode(uint8_t lamp_mode);
 
 void ledInit();
 

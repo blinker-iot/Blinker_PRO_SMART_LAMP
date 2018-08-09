@@ -269,7 +269,7 @@ void setBrightness(uint8_t bright)
 
 void modeChange()
 {
-    // (change ? rainbowDisplay1() : rainbowDisplay2());
+    // (change ? rainbowCycle() : rainbow());
 
     // change = !change;
 
@@ -279,7 +279,7 @@ void modeChange()
     Serial.println(lampType);
 }
 
-void rainbowDisplay2()
+void rainbow()
 {
     // ws2812fx.setBrightness(255);
     // ws2812fx.setSpeed(5000);
@@ -289,7 +289,7 @@ void rainbowDisplay2()
     lampType = BLINKER_LAMP_RAINBOW;
 }
 
-void rainbowDisplay1()
+void rainbowCycle()
 {
     // ws2812fx.setBrightness(255);
     // ws2812fx.setSpeed(1000);
@@ -299,10 +299,15 @@ void rainbowDisplay1()
     lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 }
 
+void setMode(uint8_t lamp_mode)
+{
+    lampType = lamp_mode;
+}
+
 void ledInit()
 {
     // ws2812fx.init();
-    // rainbowDisplay1();
+    // rainbowCycle();
     // ws2812fx.start();
 
     strip.begin();
@@ -314,7 +319,7 @@ void ledRun()
 {
     // ws2812fx.service();
 
-    // (change ? rainbowDisplay1() : rainbowDisplay2());
+    // (change ? rainbowCycle() : rainbow());
 
     // rainbow(20);
     // colorWipe(strip.Color(255, 0, 0), 50);
