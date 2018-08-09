@@ -54,27 +54,27 @@ bool dataParse(const JsonObject & data)
         String setMode = setJson[BLINKER_CMD_LAMP_MODE];
 
         if (setMode == BLINKER_CMD_LAMP_RAINBOW_CYCLE) {
-            setMode(BLINKER_LAMP_RAINBOW_CYCLE);
+            setLampMode(BLINKER_LAMP_RAINBOW_CYCLE);
             isParsed = true;
         }
         else if (setMode == BLINKER_CMD_LAMP_RAINBOW) {
-            setMode(BLINKER_LAMP_RAINBOW);
+            setLampMode(BLINKER_LAMP_RAINBOW);
             isParsed = true;
         }
         else if (setMode == BLINKER_CMD_LAMP_RAINBOW_STROBE) {
-            setMode(BLINKER_LAMP_RAINBOW_STROBE);
+            setLampMode(BLINKER_LAMP_RAINBOW_STROBE);
             isParsed = true;
         }
         else if (setMode == BLINKER_CMD_LAMP_STANDARD) {
-            setMode(BLINKER_LAMP_STANDARD);
+            setLampMode(BLINKER_LAMP_STANDARD);
             isParsed = true;
         }
         else if (setMode == BLINKER_CMD_LAMP_BREATH) {
-            setMode(BLINKER_LAMP_BREATH);
+            setLampMode(BLINKER_LAMP_BREATH);
             isParsed = true;
         }
         else if (setMode == BLINKER_CMD_LAMP_STREAMER) {
-            setMode(BLINKER_LAMP_STREAMER);
+            setLampMode(BLINKER_LAMP_STREAMER);
             isParsed = true;
         }
     }

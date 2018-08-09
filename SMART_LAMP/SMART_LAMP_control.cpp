@@ -99,7 +99,7 @@ void colorWipe(uint32_t c, uint8_t wait)
     }
 }
 
-void rainbow()
+void rainbowDisplay()
 {
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel((i + lampStep) & 255));
@@ -110,7 +110,7 @@ void rainbow()
     // lampFresh(lampSpeed);
 }
 
-void rainbowCycle() {
+void rainbowCycleDisplay() {
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + lampStep) & 255));
     }
@@ -299,7 +299,7 @@ void rainbowCycle()
     lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 }
 
-void setMode(uint8_t lamp_mode)
+void setLampMode(uint8_t lamp_mode)
 {
     lampType = lamp_mode;
 }
@@ -328,10 +328,10 @@ void ledRun()
 
     switch(lampType) {
         case BLINKER_LAMP_RAINBOW_CYCLE :
-            rainbowCycle();
+            rainbowCycleDisplay();
             break;
         case BLINKER_LAMP_RAINBOW :
-            rainbow();
+            rainbowDisplay();
             break;
         case BLINKER_LAMP_RAINBOW_STROBE :
             lampSpeed = rainbowStrobe() * 256;
