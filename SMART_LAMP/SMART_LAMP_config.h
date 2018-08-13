@@ -17,6 +17,11 @@
 #define BLINKER_BAT_POWER_USEUP         0.2
 #define BLINKER_BAT_CHECK_TIME          10000UL
 
+#define BLINKER_LAMP_COLOR_R            0
+#define BLINKER_LAMP_COLOR_G            1
+#define BLINKER_LAMP_COLOR_B            2
+#define BLINKER_LAMP_COLOR_BRIGHTNESS   3
+
 #define BLINKER_LAMP_TYPE_COUNT         6
 
 #define BLINKER_LAMP_RAINBOW_CYCLE      0
@@ -35,9 +40,19 @@
 
 #define BLINKER_CMD_LAMP_MODE           "mode"
 #define BLINKER_CMD_LAMP_COLOR          "clr"
+#define BLINKER_CMD_LAMP_SPEED          "spd"
 
 #define BLINKER_LAMP_SPEED_DEFUALT      5000UL
 
 typedef void (*callback_with_uint32_arg_t)(uint32_t data);
+
+
+// - - - - - - - - | - - - - - - - - | - - - - - - - - | - - - - - - - -
+//
+//
+//
+
+#define BLINKER_EEP_ADDR_LAMP_STATE     2432
+#define BLINKER_LAMP_STATE_SIZE         4
 
 #endif

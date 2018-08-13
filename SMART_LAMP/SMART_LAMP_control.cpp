@@ -34,14 +34,14 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
 static bool change = false;
-static uint8_t lampType = BLINKER_LAMP_RAINBOW_CYCLE;
+static uint8_t  lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 static uint32_t lampStep = 0;
 static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
 
 static uint32_t stream_color[3] = {0xff0000, 0x00ff00, 0x0000ff};
-static uint8_t stream_num = 0;
-static uint8_t stream_count = 3;
+static uint8_t  stream_num = 0;
+static uint8_t  stream_count = 3;
 
 static uint32_t standard_color = 0x88ff0088;
 
@@ -260,19 +260,30 @@ void attachDelay(callback_with_uint32_arg_t newFunc)
     _lampDelay = newFunc;
 }
 
+void setStreamer(uint8_t num, uint32_t color)
+{
+    if (num > BLINKER_LAMP_COLOR_B) return;
+
+    stream_color[num] = color;
+}
+
+void setStreamer(uint32_t *color)
+{
+    memcpy(stream_color, color, sizeof(color));
+}
+
 void setBrightness(uint8_t bright)
 {
-    // ws2812fx.setBrightness(bright);
-
     strip.setBrightness(bright);
+}
+
+void setSpeed(uint32_t speed)
+{
+    lampSpeed = speed * 256;
 }
 
 void modeChange()
 {
-    // (change ? rainbowCycle() : rainbow());
-
-    // change = !change;
-
     lampType = (lampType + 1) % BLINKER_LAMP_TYPE_COUNT;
     lampStep = 0;
 
@@ -281,21 +292,11 @@ void modeChange()
 
 void rainbow()
 {
-    // ws2812fx.setBrightness(255);
-    // ws2812fx.setSpeed(5000);
-    // ws2812fx.setColor(0x007BFF);
-    // ws2812fx.setMode(FX_MODE_RAINBOW);
-
     lampType = BLINKER_LAMP_RAINBOW;
 }
 
 void rainbowCycle()
 {
-    // ws2812fx.setBrightness(255);
-    // ws2812fx.setSpeed(1000);
-    // ws2812fx.setColor(0x007BFF);
-    // ws2812fx.setMode(FX_MODE_RAINBOW_CYCLE);
-
     lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 }
 
@@ -306,24 +307,13 @@ void setLampMode(uint8_t lamp_mode)
 
 void ledInit()
 {
-    // ws2812fx.init();
-    // rainbowCycle();
-    // ws2812fx.start();
-
     strip.begin();
     strip.show();
     strip.setBrightness(255);
 }
 
 void ledRun()
-{
-    // ws2812fx.service();
-
-    // (change ? rainbowCycle() : rainbow());
-
-    // rainbow(20);
-    // colorWipe(strip.Color(255, 0, 0), 50);
-    
+{    
     if (!needFresh()) return;
 
     switch(lampType) {
