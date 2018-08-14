@@ -74,7 +74,8 @@ bool dataParse(const JsonObject & data)
             isParsed = true;
         }
         else if (setMode == BLINKER_CMD_LAMP_STREAMER) {
-            setLampMode(BLINKER_LAMP_STREAMER);
+            uint8_t state = setJson[BLINKER_CMD_LAMP_RUN];
+            setLampMode(BLINKER_LAMP_STREAMER, state);
             isParsed = true;
         }
     }

@@ -33,7 +33,8 @@
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
-static bool change = false;
+static bool     change = false;
+static bool     lamp_state = false;
 static uint8_t  lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 static uint32_t lampStep = 0;
 static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
@@ -42,6 +43,7 @@ static uint32_t freshStart = 0;
 static uint32_t stream_color[3] = {0xff0000, 0x00ff00, 0x0000ff};
 static uint8_t  stream_num = 0;
 static uint8_t  stream_count = 3;
+static uint32_t stream_color_standard = 0;
 
 static uint32_t standard_color = 0x88ff0088;
 
@@ -122,6 +124,20 @@ void rainbowCycleDisplay() {
 
 // uint32_t streamer(uint32_t c) {
 uint8_t streamer() {
+    if (!lamp_state) {
+        uint8_t r   = (stream_color_standard >> 16 & 0xFF);
+        uint8_t g   = (stream_color_standard >>  8 & 0xFF);
+        uint8_t b   = (stream_color_standard       & 0xFF);
+
+        for(uint8_t i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, r, g, b);
+        }
+
+        strip.show();
+
+        return 0;
+    }
+
     if (lampStep == 0) stream_num = (stream_num + 1) % stream_count;
 
     int lum = lampStep;
@@ -265,6 +281,7 @@ void setStreamer(uint8_t num, uint32_t color)
     if (num > BLINKER_LAMP_COLOR_B) return;
 
     stream_color[num] = color;
+    stream_color_standard = color;
 }
 
 void setStreamer(uint32_t *color)
@@ -300,9 +317,11 @@ void rainbowCycle()
     lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 }
 
-void setLampMode(uint8_t lamp_mode)
+void setLampMode(uint8_t lamp_mode, bool state)
 {
     lampType = lamp_mode;
+
+    lamp_state = state;
 }
 
 void ledInit()

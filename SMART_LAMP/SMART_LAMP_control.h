@@ -21,7 +21,7 @@ void rainbow();
 
 void rainbowCycle();
 
-void setLampMode(uint8_t lamp_mode);
+void setLampMode(uint8_t lamp_mode, bool state = true);
 
 void ledInit();
 

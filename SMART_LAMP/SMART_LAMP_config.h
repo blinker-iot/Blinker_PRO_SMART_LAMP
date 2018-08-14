@@ -36,11 +36,18 @@
 #define BLINKER_CMD_LAMP_RAINBOW_STROBE "rais"
 #define BLINKER_CMD_LAMP_STANDARD       "std"
 #define BLINKER_CMD_LAMP_BREATH         "bre"
-#define BLINKER_CMD_LAMP_STREAMER       "str"
+#define BLINKER_CMD_LAMP_STREAMER       "stm"
 
 #define BLINKER_CMD_LAMP_MODE           "mode"
 #define BLINKER_CMD_LAMP_COLOR          "clr"
+#define BLINKER_CMD_LAMP_RUN            "run"
 #define BLINKER_CMD_LAMP_SPEED          "spd"
+
+#define BLINKER_CMD_STREAMER_COLOR      "stmc"
+#define BLINKER_CMD_STREAMER_COLOR0     "stmc0"
+#define BLINKER_CMD_STREAMER_COLOR1     "stmc1"
+#define BLINKER_CMD_STREAMER_COLOR2     "stmc2"
+#define BLINKER_CMD_STREAMER_COLOR3     "stmc3"
 
 #define BLINKER_LAMP_SPEED_DEFUALT      5000UL
 
