@@ -3,9 +3,11 @@
 
 #include "SMART_LAMP_config.h"
 
-void attachDelay(callback_with_uint32_arg_t newFunc);
+// void attachDelay(callback_with_uint32_arg_t newFunc);
 
-void lampDelay(uint32_t ms);
+// void lampDelay(uint32_t ms);
+
+void setStandard(uint32_t color);
 
 void setStreamer(uint8_t num, uint32_t color);
 
@@ -13,7 +15,7 @@ void setStreamer(uint32_t *color);
 
 void setBrightness(uint8_t bright);
 
-void setSpeed(uint32_t speed);
+void setSpeed(uint8_t speed);
 
 void modeChange();
 

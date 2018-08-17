@@ -26,10 +26,10 @@
 
 #define BLINKER_LAMP_RAINBOW_CYCLE      0
 #define BLINKER_LAMP_RAINBOW            1
-#define BLINKER_LAMP_RAINBOW_STROBE     2
+#define BLINKER_LAMP_STREAMER           2
 #define BLINKER_LAMP_STANDARD           3
 #define BLINKER_LAMP_BREATH             4
-#define BLINKER_LAMP_STREAMER           5
+#define BLINKER_LAMP_RAINBOW_STROBE     5
 
 #define BLINKER_CMD_LAMP_RAINBOW_CYCLE  "raic"
 #define BLINKER_CMD_LAMP_RAINBOW        "rai"
@@ -50,6 +50,8 @@
 #define BLINKER_CMD_STREAMER_COLOR3     "stmc3"
 
 #define BLINKER_LAMP_SPEED_DEFUALT      5000UL
+#define BLINKER_LAMP_SPEED_MIN          1000UL
+#define BLINKER_LAMP_SPEED_MAX          20000UL
 
 typedef void (*callback_with_uint32_arg_t)(uint32_t data);
 

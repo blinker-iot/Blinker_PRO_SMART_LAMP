@@ -49,6 +49,8 @@
 
 ### LAMP_STREAMER
 除streamer(多色流光渐变, 渐变到设定颜色时保持一定时间)外, 可以不设置 **run** (state)  
+> 暂定四色流光渐变  
+
 在设置streamer的多色时需将state置0, 用户方便观察设定颜色  
 ```
 {

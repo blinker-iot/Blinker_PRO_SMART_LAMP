@@ -76,7 +76,76 @@ bool dataParse(const JsonObject & data)
         else if (setMode == BLINKER_CMD_LAMP_STREAMER) {
             uint8_t state = setJson[BLINKER_CMD_LAMP_RUN];
             setLampMode(BLINKER_LAMP_STREAMER, state);
+            
+            if (!state) {
+                if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR0)) {
+                    uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR0][0];
+                    uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR0][1];
+                    uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR0][2];
+
+                    setStreamer(0, stm_r << 16 | stm_g << 8 | stm_r);
+                }
+                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR1)) {
+                    uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR1][0];
+                    uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR1][1];
+                    uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR1][2];
+
+                    setStreamer(1, stm_r << 16 | stm_g << 8 | stm_r);
+                }
+                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR2)) {
+                    uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR2][0];
+                    uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR2][1];
+                    uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR2][2];
+
+                    setStreamer(2, stm_r << 16 | stm_g << 8 | stm_r);
+                }
+                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR3)) {
+                    uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR3][0];
+                    uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR3][1];
+                    uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR3][2];
+
+                    setStreamer(3, stm_r << 16 | stm_g << 8 | stm_r);
+                }
+            }
+            else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR)) {
+                uint32_t stm_clr[4];
+                uint8_t  clr_get;
+
+                for (uint8_t num = 0; num < 4; num++) {
+                    clr_get = setJson[BLINKER_CMD_STREAMER_COLOR][num][0];
+                    stm_clr[num] = clr_get;
+                    clr_get = setJson[BLINKER_CMD_STREAMER_COLOR][num][1];
+                    stm_clr[num] = stm_clr[num] << 8 | clr_get;
+                    clr_get = setJson[BLINKER_CMD_STREAMER_COLOR][num][2];
+                    stm_clr[num] = stm_clr[num] << 8 | clr_get;
+                }
+
+                setStreamer(stm_clr);
+            }
+            
             isParsed = true;
+        }
+
+        if (setJson.containsKey(BLINKER_CMD_LAMP_COLOR)) {
+            uint32_t set_clr;
+            uint8_t  clr;
+
+            clr = setJson[BLINKER_CMD_LAMP_COLOR][0];
+            set_clr = clr;
+            clr = setJson[BLINKER_CMD_LAMP_COLOR][1];
+            set_clr = set_clr << 8 | clr;
+            clr = setJson[BLINKER_CMD_LAMP_COLOR][2];
+            set_clr = set_clr << 8 | clr;
+            clr = setJson[BLINKER_CMD_LAMP_COLOR][3];
+            set_clr = set_clr | clr << 24;
+
+            setStandard(set_clr);
+        }
+
+        if (setJson.containsKey(BLINKER_CMD_LAMP_SPEED)) {
+            uint8_t speed = setJson[BLINKER_CMD_LAMP_SPEED];
+
+            setSpeed(speed);
         }
     }
     else if (data.containsKey(BLINKER_CMD_GET)) {
@@ -227,10 +296,10 @@ void batCheck()
     }
 }
 
-void delays(uint32_t ms)
-{
-    Blinker.delay(ms);
-}
+// void delays(uint32_t ms)
+// {
+//     Blinker.delay(ms);
+// }
 
 void hardwareInit()
 {
@@ -264,7 +333,7 @@ void LAMP_init()
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
 #endif
 
-    attachDelay(delays);
+    // attachDelay(delays);
 }
 
 void LAMP_run()
