@@ -6,6 +6,7 @@
 // void attachDelay(callback_with_uint32_arg_t newFunc);
 
 // void lampDelay(uint32_t ms);
+void resetDisplay(uint16_t _time);
 
 void setStandard(uint32_t color);
 

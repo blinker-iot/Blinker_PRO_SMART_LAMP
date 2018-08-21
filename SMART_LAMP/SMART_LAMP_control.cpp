@@ -52,7 +52,7 @@ static uint32_t standard_color = 0x88ff0088;
 
 bool needFresh()
 {
-    strip.show();
+    // strip.show();
 
     if (_lampSpeed < 256) _lampSpeed = 256;
 
@@ -270,6 +270,20 @@ uint32_t rainbowStrobe()
     strip.show();
 
     return _delay;
+}
+
+void resetDisplay(uint16_t _time)
+{
+    uint8_t lum = map(_time, 0, 10000, 255, 0);
+    uint8_t r   = 255 - lum;
+    uint8_t g   = lum;
+    uint8_t b   = lum;
+
+    for(uint8_t i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
 }
 
 // void attachDelay(callback_with_uint32_arg_t newFunc)

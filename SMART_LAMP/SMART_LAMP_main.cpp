@@ -23,6 +23,7 @@
 #include "SMART_LAMP_control.h"
 
 static bool inited = false;
+static bool isLongPress = false;
 static uint8_t batRead;
 static uint8_t batBase;
 static uint32_t batFresh = 0;
@@ -224,9 +225,22 @@ void doubleClick()
  */
 void longPressStart()
 {
+    isLongPress = true;
     rainbowCycle();
 
     BLINKER_LOG1("Button long press start!");
+}
+
+/* 
+ * Add your code in this function
+ * 
+ * When long press stop, device will call this function
+ */
+void longPressStop()
+{
+    isLongPress = false;
+
+    BLINKER_LOG1("Button long press stop!");
 }
 
 /* 
@@ -340,6 +354,11 @@ void LAMP_run()
 {
     Blinker.run();
 
-    ledRun();
+    if (isLongPress) {
+        resetDisplay(Blinker.pressedTime());
+    }
+    else {
+        ledRun();
+    }
     // batCheck();
 }
