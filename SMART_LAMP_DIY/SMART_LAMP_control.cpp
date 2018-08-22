@@ -368,6 +368,8 @@ void ledInit()
     strip.begin();
     strip.show();
     strip.setBrightness(255);
+
+    ledRun();
 }
 
 void ledRun()

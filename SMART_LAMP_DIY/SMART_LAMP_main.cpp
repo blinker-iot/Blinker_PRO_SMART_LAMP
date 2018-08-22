@@ -16,8 +16,8 @@
 
 #include <Blinker.h>
 
-char ssid[] = "mostfun";//"Your WiFi network SSID or name";
-char pswd[] = "18038083873";//"Your WiFi network WPA password or WEP key";
+char ssid[] = "有没有wifi";//"Your WiFi network SSID or name";
+char pswd[] = "i8888888";//"Your WiFi network WPA password or WEP key";
 
 #define BUTTON_1 "btn-rc"
 #define BUTTON_2 "btn-rb"
@@ -26,18 +26,15 @@ char pswd[] = "18038083873";//"Your WiFi network WPA password or WEP key";
 #define BUTTON_5 "btn-bre"
 #define BUTTON_6 "btn-stb"
 
-// BlinkerButton rcButton(BUTTON_1);
-// BlinkerButton rbButton(BUTTON_2);
-// BlinkerButton strButton(BUTTON_3);
-// BlinkerButton stdButton(BUTTON_4);
-// BlinkerButton breButton(BUTTON_5);
-// BlinkerButton stbButton(BUTTON_6);
-
 BlinkerButton * Button[6];
 
 #define Slider_1 "speed"
 
 BlinkerSlider spdSlider(Slider_1);
+
+#define Number_1 "bat"
+
+BlinkerNumber batNumber(Number_1);
 
 #define RGB_1 "rgb"
 
@@ -388,6 +385,18 @@ void batCheck()
         }
         
         BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+
+        // fas fa-battery-full
+        if (batRead >= 41) batNumber.icon("fas fa-battery-full");
+        else if (batRead >= 40) batNumber.icon("fas fa-battery-three-quarters");
+        else if (batRead >= 39) batNumber.icon("fas fa-battery-half");
+        else if (batRead >= 38) batNumber.icon("fas fa-battery-quarter");
+        else batNumber.icon("fas fa-battery-empty");
+        
+        batNumber.color("#00FF00");
+        batNumber.unit("v");
+        batNumber.text("电量");
+        batNumber.print(batRead / 10.0);
         // BLINKER_LOG_FreeHeap();
 
         batFresh = millis();
@@ -458,5 +467,6 @@ void LAMP_run()
     else {
         ledRun();
     }
-    // batCheck();
+
+    batCheck();
 }
