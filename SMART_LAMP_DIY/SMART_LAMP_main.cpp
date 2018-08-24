@@ -10,14 +10,15 @@
  */
 
 #define BLINKER_PRINT Serial
-#define BLINKER_WIFI
+#define BLINKER_MQTT
 // #define BLINKER_ESP_SMARTCONFIG
 #define BLINKER_DEBUG_ALL
 
 #include <Blinker.h>
 
-char ssid[] = "有没有wifi";//"Your WiFi network SSID or name";
-char pswd[] = "i8888888";//"Your WiFi network WPA password or WEP key";
+char auth[] = "Your MQTT Secret Key";
+char ssid[] = "Your WiFi network SSID or name";
+char pswd[] = "Your WiFi network WPA password or WEP key";
 
 #define BUTTON_1 "btn-rc"
 #define BUTTON_2 "btn-rb"
@@ -267,6 +268,8 @@ void singalClick()
 {
     modeChange();
 
+    Blinker.beginFormat();
+
     for (uint8_t num = 0; num < 6; num++) {
         if (num != getMode()) {
             Button[num]->color("#000000");
@@ -279,6 +282,8 @@ void singalClick()
     }
 
     spdSlider.print(getSpeed());
+
+    Blinker.endFormat();
     
     BLINKER_LOG1("Button clicked!");
 }
@@ -429,7 +434,7 @@ void LAMP_init()
     hardwareInit();
     ledInit();
     
-    Blinker.begin(ssid, pswd);
+    Blinker.begin(auth, ssid, pswd);
 
     Button[0] = new BlinkerButton(BUTTON_1, button1_callback);
     Button[1] = new BlinkerButton(BUTTON_2, button2_callback);
