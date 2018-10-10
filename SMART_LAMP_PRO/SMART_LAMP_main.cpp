@@ -322,6 +322,8 @@ void hardwareInit()
     pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
     digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
+    touckInit();
+
     batRead = getBAT() * 10;
 }
 
@@ -360,5 +362,7 @@ void LAMP_run()
     else {
         ledRun();
     }
+
+    touchTick();
     // batCheck();
 }

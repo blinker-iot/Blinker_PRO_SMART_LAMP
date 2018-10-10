@@ -11,14 +11,15 @@
 
 #define BLINKER_PRINT Serial
 #define BLINKER_MQTT
+// #define BLINKER_WIFI
 // #define BLINKER_ESP_SMARTCONFIG
 #define BLINKER_DEBUG_ALL
 
 #include <Blinker.h>
 
-char auth[] = "Your MQTT Secret Key";
-char ssid[] = "Your WiFi network SSID or name";
-char pswd[] = "Your WiFi network WPA password or WEP key";
+char auth[] = "c64a7289ui86";
+char ssid[] = "有没有wifi";
+char pswd[] = "i8888888";
 
 #define BUTTON_1 "btn-rc"
 #define BUTTON_2 "btn-rb"
@@ -62,7 +63,7 @@ void button1_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG2("get button state: ", state);
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 0) {
@@ -77,7 +78,7 @@ void button1_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_RAINBOW_CYCLE);
 }
@@ -86,7 +87,7 @@ void button2_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG2("get button state: ", state);
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 1) {
@@ -101,7 +102,7 @@ void button2_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_RAINBOW);
 }
@@ -110,7 +111,7 @@ void button3_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG2("get button state: ", state);
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 2) {
@@ -125,7 +126,7 @@ void button3_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_STREAMER);
 }
@@ -134,7 +135,7 @@ void button4_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG2("get button state: ", state);
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 3) {
@@ -149,7 +150,7 @@ void button4_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_STANDARD);
 }
@@ -158,7 +159,7 @@ void button5_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG2("get button state: ", state);
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 4) {
@@ -173,7 +174,7 @@ void button5_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_BREATH);
 }
@@ -182,7 +183,7 @@ void button6_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG2("get button state: ", state);
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 5) {
@@ -197,7 +198,7 @@ void button6_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_RAINBOW_STROBE);
 }
@@ -268,7 +269,7 @@ void singalClick()
 {
     modeChange();
 
-    Blinker.beginFormat();
+    // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
         if (num != getMode()) {
@@ -283,7 +284,7 @@ void singalClick()
 
     spdSlider.print(getSpeed());
 
-    Blinker.endFormat();
+    // Blinker.endFormat();
     
     BLINKER_LOG1("Button clicked!");
 }
@@ -407,7 +408,7 @@ void batCheck()
         batFresh = millis();
 
         if (batRead < BLINKER_BAT_POWER_LOW * 10) {
-            digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+            // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
         }
     }
 }
@@ -435,6 +436,7 @@ void LAMP_init()
     ledInit();
     
     Blinker.begin(auth, ssid, pswd);
+    // Blinker.begin(ssid, pswd);
 
     Button[0] = new BlinkerButton(BUTTON_1, button1_callback);
     Button[1] = new BlinkerButton(BUTTON_2, button2_callback);
@@ -473,5 +475,5 @@ void LAMP_run()
         ledRun();
     }
 
-    batCheck();
+    // batCheck();
 }

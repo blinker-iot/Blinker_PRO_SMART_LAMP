@@ -3,14 +3,19 @@
 
 #include <Arduino.h>
 
-#define BLINKER_WS2812_PIN              4
-#define BLINKER_WS2812_COUNT            9
+#define BLINKER_BUTTON_ADD_PIN          2
+#define BLINKER_BUTTON_SUB_PIN          5
+#define BLINKER_BUTTON_EC0_PIN          0
+#define BLINKER_BUTTON_EC1_PIN          4
+
+#define BLINKER_WS2812_PIN              13
+#define BLINKER_WS2812_COUNT            24
 
 #define BLINKER_POWER_3V3_PIN           14
 #define BLINKER_POWER_5V_PIN            15
 
-#define BLINKER_IIC_SCK_PIN             2
-#define BLINKER_IIC_SDA_PIN             0
+// #define BLINKER_IIC_SCK_PIN             2
+// #define BLINKER_IIC_SDA_PIN             0
 
 #define BLINKER_BAT_POWER_LOW           3.5
 #define BLINKER_BAT_POWER_HIGH          4.0

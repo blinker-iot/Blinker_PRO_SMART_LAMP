@@ -33,6 +33,13 @@
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
+#include "OneButton.h"
+
+OneButton buttonAdd(BLINKER_BUTTON_ADD_PIN, true);
+OneButton buttonSub(BLINKER_BUTTON_SUB_PIN, true);
+OneButton buttonEC0(BLINKER_BUTTON_EC0_PIN, true);
+OneButton buttonEC1(BLINKER_BUTTON_EC1_PIN, true);
+
 static bool     change = false;
 static bool     lamp_state = true;
 static uint8_t  lampType = BLINKER_LAMP_RAINBOW_CYCLE;
@@ -47,6 +54,12 @@ static uint8_t  stream_count = 4;
 static uint32_t stream_color_standard = 0;
 
 static uint32_t standard_color = 0x88ff0088;
+
+static bool     old_ec0;
+static bool     old_ec1;
+static bool     now_ec0;
+static bool     now_ec1;
+static bool     ec0check;
 
 // static callback_with_uint32_arg_t _lampDelay = NULL;
 
@@ -357,7 +370,7 @@ void ledInit()
 {
     strip.begin();
     strip.show();
-    strip.setBrightness(255);
+    strip.setBrightness(20);
 }
 
 void ledRun()
@@ -387,3 +400,111 @@ void ledRun()
             break;
     }
 }
+
+void addClick()
+{
+    lampType = (lampType + 1) % BLINKER_LAMP_TYPE_COUNT;
+
+    Serial.println("Button add click.");
+}
+
+void subClick()
+{
+    lampType = (lampType - 1 + BLINKER_LAMP_TYPE_COUNT) % BLINKER_LAMP_TYPE_COUNT;
+
+    Serial.println("Button sub click.");
+}
+
+uint8_t ecState = 0;
+uint8_t position = 125;
+
+void checkState()
+{
+    switch (ecState) {
+        case 1: case 7: case 8: case 14:
+            if (position != 255) position++;
+            return;
+        case 2: case 4: case 11: case 13:
+            if (position != 0) position--;
+            return;
+        case 3: case 12:
+            if (position != 255 && position <= 253) position += 2;
+            else position = 255;
+            return;
+        case 6: case 9:
+            if (position != 0 && position >=2) position -= 2;
+            else position = 0;
+            return;
+    }
+}
+
+void ec0Click()
+{
+    now_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+    now_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+
+    ecState = now_ec1 << 3 | now_ec0 << 2 | old_ec1 << 1 | old_ec0 << 0;
+
+    checkState();
+
+    Serial.print("ecState: ");
+    Serial.print(now_ec1);
+    Serial.print(now_ec0);
+    Serial.print(old_ec1);
+    Serial.print(old_ec0);
+    Serial.print(" ");
+    Serial.print(ecState);
+    Serial.print(" position: ");
+    Serial.println(position);
+}
+
+void ec1Click()
+{
+    now_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+    now_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+
+    ecState = now_ec1 << 3 | now_ec0 << 2 | old_ec1 << 1 | old_ec0 << 0;
+
+    checkState();
+
+    Serial.print("ecState: ");
+    Serial.print(now_ec1);
+    Serial.print(now_ec0);
+    Serial.print(old_ec1);
+    Serial.print(old_ec0);
+    Serial.print(" ");
+    Serial.print(ecState);
+    Serial.print(" position: ");
+    Serial.println(position);
+}
+
+void touchTick()
+{
+    // checkState();
+
+    buttonAdd.tick();
+    buttonSub.tick();
+    // buttonEC0.tick();
+    // buttonEC1.tick();
+
+    // Serial.println("Button click.");
+    old_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+    old_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+}
+
+void touckInit()
+{
+    buttonAdd.attachClick(addClick);
+    buttonSub.attachClick(subClick);
+    buttonEC0.attachClick(ec0Click);
+    buttonEC1.attachClick(ec1Click);
+
+    attachInterrupt(BLINKER_BUTTON_ADD_PIN, touchTick, CHANGE);
+    attachInterrupt(BLINKER_BUTTON_SUB_PIN, touchTick, CHANGE);
+    attachInterrupt(BLINKER_BUTTON_EC0_PIN, ec0Click, CHANGE);
+    attachInterrupt(BLINKER_BUTTON_EC1_PIN, ec1Click, CHANGE);
+
+    old_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+    old_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+}
+
