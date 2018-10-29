@@ -42,7 +42,7 @@ BlinkerNumber batNumber(Number_1);
 
 BlinkerRGB RGB(RGB_1);
 
-#include <modules/OneButton/OneButton.h>
+#include <OneButton.h>
 
 #define BLINKER_BUTTON_PIN 12
 
