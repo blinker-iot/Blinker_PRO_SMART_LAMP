@@ -22,6 +22,8 @@ void setSpeed(uint8_t speed);
 
 uint8_t getMode();
 
+void setMode(uint8_t _mode);
+
 void modeChange();
 
 void rainbow();

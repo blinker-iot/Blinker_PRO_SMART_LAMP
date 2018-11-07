@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-#define BLINKER_WS2812_PIN              4
-#define BLINKER_WS2812_COUNT            9
+#define BLINKER_WS2812_PIN              13
+#define BLINKER_WS2812_COUNT            24
 
 #define BLINKER_POWER_3V3_PIN           14
 #define BLINKER_POWER_5V_PIN            15

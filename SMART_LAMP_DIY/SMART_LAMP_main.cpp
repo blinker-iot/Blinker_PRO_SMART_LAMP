@@ -11,15 +11,14 @@
 
 #define BLINKER_PRINT Serial
 #define BLINKER_MQTT
-// #define BLINKER_WIFI
-// #define BLINKER_ESP_SMARTCONFIG
+#define BLINKER_ALIGENIE_LIGHT
 #define BLINKER_DEBUG_ALL
 
 #include <Blinker.h>
 
-char auth[] = "c64a7289ui86";
-char ssid[] = "有没有wifi";
-char pswd[] = "i8888888";
+char auth[] = "Your MQTT Secret Key";
+char ssid[] = "Your WiFi network SSID or name";
+char pswd[] = "Your WiFi network WPA password or WEP key";
 
 #define BUTTON_1 "btn-rc"
 #define BUTTON_2 "btn-rb"
@@ -58,6 +57,320 @@ static uint32_t lamp_speed;
 static uint32_t batFresh = 0;
 static uint32_t press_start_time;
 static uint16_t pressed_time;
+
+uint8_t colorR, colorG, colorB, colorW;
+bool wsState = true;
+String wsMode = BLINKER_CMD_COMMON;
+
+String getColor()
+{
+    uint32_t color = colorR << 16 | colorG << 8 | colorB;
+
+    switch (color)
+    {
+        case 0xFF0000 :
+            return "Red";
+        case 0xFFFF00 :
+            return "Yellow";
+        case 0x0000FF :
+            return "Blue";
+        case 0x00FF00 :
+            return "Green";
+        case 0xFFFFFF :
+            return "White";
+        case 0x000000 :
+            return "Black";
+        case 0x00FFFF :
+            return "Cyan";
+        case 0x800080 :
+            return "Purple";
+        case 0xFFA500 :
+            return "Orange";
+        default :
+            return "White";
+    }
+}
+
+String getLampMode()
+{
+    uint8_t get_mode = getMode();
+
+    switch(get_mode) {
+        case BLINKER_LAMP_RAINBOW_CYCLE :
+            return BLINKER_CMD_MOVIE;
+        case BLINKER_LAMP_RAINBOW :
+            return BLINKER_CMD_HOLIDAY;
+        case BLINKER_LAMP_STREAMER :
+            return BLINKER_CMD_MUSIC;
+        case BLINKER_LAMP_STANDARD :
+            return BLINKER_CMD_COMMON;
+        case BLINKER_LAMP_BREATH :
+            return BLINKER_CMD_SLEEP;
+        case BLINKER_LAMP_RAINBOW_STROBE :
+            return BLINKER_CMD_MUSIC;
+        default :
+            return BLINKER_CMD_COMMON;
+    }
+}
+
+void aligeniePowerSate(const String & state)
+{
+    BLINKER_LOG2("need set power state: ", state);
+
+    if (state == BLINKER_CMD_ON) {
+        digitalWrite(LED_BUILTIN, HIGH);
+
+        BlinkerAliGenie.powerState("on");
+        BlinkerAliGenie.print();
+
+        wsState = true;
+
+        if (colorW == 0) colorW = 255;
+    }
+    else if (state == BLINKER_CMD_OFF) {
+        digitalWrite(LED_BUILTIN, LOW);
+
+        BlinkerAliGenie.powerState("off");
+        BlinkerAliGenie.print();
+
+        wsState = false;
+
+        colorW = 0;
+        colorR = 0; colorG = 0; colorB = 0;
+
+        setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+}
+
+void aligenieColor(const String & color)
+{
+    BLINKER_LOG2("need set color: ", color);
+
+    if (color == "Red") {
+        colorR = 255;
+        colorG = 0;
+        colorB = 0;
+    }
+    else if (color == "Yellow") {
+        colorR = 255;
+        colorG = 255;
+        colorB = 0;
+    }
+    else if (color == "Blue") {
+        colorR = 0;
+        colorG = 0;
+        colorB = 255;
+    }
+    else if (color == "Green") {
+        colorR = 0;
+        colorG = 255;
+        colorB = 0;
+    }
+    else if (color == "White") {
+        colorR = 255;
+        colorG = 255;
+        colorB = 255;
+    }
+    else if (color == "Black") {
+        colorR = 0;
+        colorG = 0;
+        colorB = 0;
+    }
+    else if (color == "Cyan") {
+        colorR = 0;
+        colorG = 255;
+        colorB = 255;
+    }
+    else if (color == "Purple") {
+        colorR = 128;
+        colorG = 0;
+        colorB = 128;
+    }
+    else if (color == "Orange") {
+        colorR = 255;
+        colorG = 165;
+        colorB = 0;
+    }
+    
+    wsState = true;
+    colorW = 255;
+
+    setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
+    // setBrightness(colorW);
+    setMode(BLINKER_LAMP_STANDARD);
+
+    BlinkerAliGenie.color(color);
+    BlinkerAliGenie.print();
+}
+
+void aligenieMode(const String & mode)
+{
+    BLINKER_LOG2("need set mode: ", mode);
+
+    if (mode == BLINKER_CMD_READING) {
+        // Your mode function
+        colorR = 255; colorG = 255; colorB = 255;
+        setStandard(colorW << 24 | colorR << 16 | colorG << 8 | colorB);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+    else if (mode == BLINKER_CMD_MOVIE) {
+        // Your mode function
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_RAINBOW_CYCLE);
+    }
+    else if (mode == BLINKER_CMD_SLEEP) {
+        // Your mode function
+        setMode(BLINKER_LAMP_BREATH);
+    }
+    else if (mode == BLINKER_CMD_HOLIDAY) {
+        // Your mode function
+        setMode(BLINKER_LAMP_RAINBOW);
+    }
+    else if (mode == BLINKER_CMD_MUSIC) {
+        // Your mode function
+        setMode(BLINKER_LAMP_STREAMER);
+    }
+    else if (mode == BLINKER_CMD_COMMON) {
+        // Your mode function
+        setStandard(colorR << 16 | colorG << 8 | colorB);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+
+    wsMode = mode;
+
+    BlinkerAliGenie.mode(mode);
+    BlinkerAliGenie.print();
+}
+
+void aligeniecMode(const String & cmode)
+{
+    BLINKER_LOG2("need cancel mode: ", cmode);
+
+    if (cmode == BLINKER_CMD_READING) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_MOVIE) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_SLEEP) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_HOLIDAY) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_MUSIC) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_COMMON) {
+        // Your mode function
+    }
+
+    wsMode = BLINKER_CMD_COMMON; // new mode
+
+    BlinkerAliGenie.mode(wsMode); // must response
+    BlinkerAliGenie.print();
+}
+
+void aligenieBright(int32_t bright)
+{
+    BLINKER_LOG2("need set brightness: ", bright);
+
+    colorW = bright;
+
+    BLINKER_LOG2("now set brightness: ", colorW);
+
+    setBrightness(colorW);
+
+    BlinkerAliGenie.brightness(bright);
+    BlinkerAliGenie.print();
+}
+
+void aligenieRelativeBright(int32_t bright)
+{
+    BLINKER_LOG2("need set relative brightness: ", bright);
+
+    if (colorW + bright < 255 && colorW + bright >= 0) {
+        colorW += bright;
+    }
+
+    BLINKER_LOG2("now set brightness: ", colorW);
+
+    setBrightness(colorW);
+
+    BlinkerAliGenie.brightness(bright);
+    BlinkerAliGenie.print();
+}
+
+void aligenieColoTemp(int32_t colorTemp)
+{
+    BLINKER_LOG2("need set colorTemperature: ", colorTemp);
+
+    BlinkerAliGenie.colorTemp(colorTemp);
+    BlinkerAliGenie.print();
+}
+
+void aligenieRelativeColoTemp(int32_t colorTemp)
+{
+    BLINKER_LOG2("need set relative colorTemperature: ", colorTemp);
+
+    BlinkerAliGenie.colorTemp(colorTemp);
+    BlinkerAliGenie.print();
+}
+
+void aligenieQuery(int32_t queryCode)
+{
+    BLINKER_LOG2("AliGenie Query codes: ", queryCode);
+
+    switch (queryCode)
+    {
+        case BLINKER_CMD_QUERY_ALL_NUMBER :
+            BLINKER_LOG1("AliGenie Query All");
+            BlinkerAliGenie.powerState(wsState ? "on" : "off");
+            BlinkerAliGenie.color(getColor());
+            BlinkerAliGenie.mode(getLampMode());
+            BlinkerAliGenie.colorTemp(50);
+            BlinkerAliGenie.brightness(colorW);
+            BlinkerAliGenie.print();
+            break;
+        case BLINKER_CMD_QUERY_POWERSTATE_NUMBER :
+            BLINKER_LOG1("AliGenie Query Power State");
+            BlinkerAliGenie.powerState(wsState ? "on" : "off");
+            BlinkerAliGenie.print();
+            break;
+        case BLINKER_CMD_QUERY_COLOR_NUMBER :
+            BLINKER_LOG1("AliGenie Query Color");
+            BlinkerAliGenie.color(getColor());
+            BlinkerAliGenie.print();
+            break;
+        case BLINKER_CMD_QUERY_MODE_NUMBER :
+            BLINKER_LOG1("AliGenie Query Mode");
+            BlinkerAliGenie.mode(getLampMode());
+            BlinkerAliGenie.print();
+            break;
+        case BLINKER_CMD_QUERY_COLORTEMP_NUMBER :
+            BLINKER_LOG1("AliGenie Query ColorTemperature");
+            BlinkerAliGenie.colorTemp(50);
+            BlinkerAliGenie.print();
+            break;
+        case BLINKER_CMD_QUERY_BRIGHTNESS_NUMBER :
+            BLINKER_LOG1("AliGenie Query Brightness");
+            BlinkerAliGenie.brightness(colorW);
+            BlinkerAliGenie.print();
+            break;
+        default :
+            BlinkerAliGenie.powerState(wsState ? "on" : "off");
+            BlinkerAliGenie.color(getColor());
+            BlinkerAliGenie.mode(getLampMode());
+            BlinkerAliGenie.colorTemp(50);
+            BlinkerAliGenie.brightness(colorW);
+            BlinkerAliGenie.print();
+            break;
+    }
+}
 
 void button1_callback(const String & state)
 {
@@ -219,7 +532,7 @@ void rgb1_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t br
     BLINKER_LOG2("B value: ", b_value);
     BLINKER_LOG2("Rrightness value: ", bright_value);
 
-    setStandard(bright_value <<24 | r_value << 16 | g_value << 8 | b_value);
+    setStandard(bright_value << 24 | r_value << 16 | g_value << 8 | b_value);
 }
 
 /* 
@@ -232,6 +545,8 @@ void rgb1_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t br
  */
 void heartbeat()
 {
+    uint32_t now_time = millis();
+
     for (uint8_t num = 0; num < 6; num++) {
         if (num != getMode()) {
             Button[num]->color("#000000");
@@ -246,6 +561,8 @@ void heartbeat()
     spdSlider.print(getSpeed());
 
     BLINKER_LOG1("heartbeat!");
+
+    BLINKER_LOG2("use time: ", millis() - now_time);
 }
 
 /* 
@@ -434,6 +751,13 @@ void LAMP_init()
 
     hardwareInit();
     ledInit();
+
+    button.attachClick(singalClick);
+    button.attachDoubleClick(doubleClick);
+    button.attachLongPressStart(longPressStart);
+    button.attachLongPressStop(longPressStop);
+
+    attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
     
     Blinker.begin(auth, ssid, pswd);
     // Blinker.begin(ssid, pswd);
@@ -452,12 +776,15 @@ void LAMP_init()
     // Blinker.attachParse(dataParse);
     Blinker.attachHeartbeat(heartbeat);
 
-    button.attachClick(singalClick);
-    button.attachDoubleClick(doubleClick);
-    button.attachLongPressStart(longPressStart);
-    button.attachLongPressStop(longPressStop);
-
-    attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
+    BlinkerAliGenie.attachPowerState(aligeniePowerSate);
+    BlinkerAliGenie.attachColor(aligenieColor);
+    BlinkerAliGenie.attachMode(aligenieMode);
+    BlinkerAliGenie.attachCancelMode(aligeniecMode);
+    BlinkerAliGenie.attachBrightness(aligenieBright);
+    BlinkerAliGenie.attachRelativeBrightness(aligenieRelativeBright);
+    BlinkerAliGenie.attachColorTemperature(aligenieColoTemp);
+    BlinkerAliGenie.attachRelativeColorTemperature(aligenieRelativeColoTemp);
+    BlinkerAliGenie.attachQuery(aligenieQuery);
 
     // attachDelay(delays);
 }

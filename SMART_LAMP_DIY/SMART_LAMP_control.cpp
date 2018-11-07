@@ -199,9 +199,11 @@ uint32_t streamer() {
 void standard()
 {
     uint8_t lum = (standard_color >> 24 & 0xFF);
-    uint8_t r   = (standard_color >> 16 & 0xFF) * lum / 256;
-    uint8_t g   = (standard_color >>  8 & 0xFF) * lum / 256;
-    uint8_t b   = (standard_color       & 0xFF) * lum / 256;
+    uint8_t r   = (standard_color >> 16 & 0xFF);// * lum / 256;
+    uint8_t g   = (standard_color >>  8 & 0xFF);// * lum / 256;
+    uint8_t b   = (standard_color       & 0xFF);// * lum / 256;
+
+    strip.setBrightness(lum);
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -334,6 +336,11 @@ void setSpeed(uint8_t speed)
 uint8_t getMode()
 {
     return lampType;
+}
+
+void setMode(uint8_t _mode)
+{
+    lampType = _mode;
 }
 
 void modeChange()
