@@ -16,6 +16,8 @@ void setStreamer(uint32_t *color);
 
 void setBrightness(uint8_t bright);
 
+uint8_t getBrightness();
+
 uint8_t getSpeed();
 
 void setSpeed(uint8_t speed);

@@ -316,6 +316,16 @@ void setBrightness(uint8_t bright)
     strip.setBrightness(bright);
 }
 
+uint8_t getBrightness()
+{
+    return strip.getBrightness();
+}
+
+uint32_t getPixelColor()
+{
+    return strip.getPixelColor(0);
+}
+
 uint8_t getSpeed()
 {
     return map(lampSpeed, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN, 0, 128);

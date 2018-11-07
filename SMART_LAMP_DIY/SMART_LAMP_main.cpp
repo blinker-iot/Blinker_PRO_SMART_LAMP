@@ -66,6 +66,10 @@ String getColor()
 {
     uint32_t color = colorR << 16 | colorG << 8 | colorB;
 
+    if (color == 0) {
+        color = getPixelColor() & 0x00FFFFFF;
+    }
+
     switch (color)
     {
         case 0xFF0000 :
@@ -341,7 +345,7 @@ void aligenieQuery(int32_t queryCode)
             BlinkerAliGenie.color(getColor());
             BlinkerAliGenie.mode(getLampMode());
             BlinkerAliGenie.colorTemp(50);
-            BlinkerAliGenie.brightness(colorW);
+            BlinkerAliGenie.brightness(getBrightness());
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_POWERSTATE_NUMBER :
@@ -366,7 +370,7 @@ void aligenieQuery(int32_t queryCode)
             break;
         case BLINKER_CMD_QUERY_BRIGHTNESS_NUMBER :
             BLINKER_LOG1("AliGenie Query Brightness");
-            BlinkerAliGenie.brightness(colorW);
+            BlinkerAliGenie.brightness(getBrightness());
             BlinkerAliGenie.print();
             break;
         default :
@@ -374,7 +378,7 @@ void aligenieQuery(int32_t queryCode)
             BlinkerAliGenie.color(getColor());
             BlinkerAliGenie.mode(getLampMode());
             BlinkerAliGenie.colorTemp(50);
-            BlinkerAliGenie.brightness(colorW);
+            BlinkerAliGenie.brightness(getBrightness());
             BlinkerAliGenie.print();
             break;
     }
