@@ -119,7 +119,7 @@ String getLampMode()
 
 void aligeniePowerSate(const String & state)
 {
-    BLINKER_LOG2("need set power state: ", state);
+    BLINKER_LOG("need set power state: ", state);
 
     if (state == BLINKER_CMD_ON) {
         digitalWrite(LED_BUILTIN, HIGH);
@@ -150,7 +150,7 @@ void aligeniePowerSate(const String & state)
 
 void aligenieColor(const String & color)
 {
-    BLINKER_LOG2("need set color: ", color);
+    BLINKER_LOG("need set color: ", color);
 
     if (color == "Red") {
         colorR = 255;
@@ -211,7 +211,7 @@ void aligenieColor(const String & color)
 
 void aligenieMode(const String & mode)
 {
-    BLINKER_LOG2("need set mode: ", mode);
+    BLINKER_LOG("need set mode: ", mode);
 
     if (mode == BLINKER_CMD_READING) {
         // Your mode function
@@ -252,7 +252,7 @@ void aligenieMode(const String & mode)
 
 void aligeniecMode(const String & cmode)
 {
-    BLINKER_LOG2("need cancel mode: ", cmode);
+    BLINKER_LOG("need cancel mode: ", cmode);
 
     if (cmode == BLINKER_CMD_READING) {
         // Your mode function
@@ -281,7 +281,7 @@ void aligeniecMode(const String & cmode)
 
 void aligenieBright(const String & bright)
 {
-    BLINKER_LOG2("need set brightness: ", bright);
+    BLINKER_LOG("need set brightness: ", bright);
 
     if (bright == BLINKER_CMD_MAX) {
         colorW = 255;
@@ -293,7 +293,7 @@ void aligenieBright(const String & bright)
         colorW = bright.toInt();
     }
 
-    BLINKER_LOG2("now set brightness: ", colorW);
+    BLINKER_LOG("now set brightness: ", colorW);
 
     setBrightness(colorW);
 
@@ -303,13 +303,13 @@ void aligenieBright(const String & bright)
 
 void aligenieRelativeBright(int32_t bright)
 {
-    BLINKER_LOG2("need set relative brightness: ", bright);
+    BLINKER_LOG("need set relative brightness: ", bright);
 
     if (colorW + bright < 255 && colorW + bright >= 0) {
         colorW += bright;
     }
 
-    BLINKER_LOG2("now set brightness: ", colorW);
+    BLINKER_LOG("now set brightness: ", colorW);
 
     setBrightness(colorW);
 
@@ -319,7 +319,7 @@ void aligenieRelativeBright(int32_t bright)
 
 void aligenieColoTemp(int32_t colorTemp)
 {
-    BLINKER_LOG2("need set colorTemperature: ", colorTemp);
+    BLINKER_LOG("need set colorTemperature: ", colorTemp);
 
     BlinkerAliGenie.colorTemp(colorTemp);
     BlinkerAliGenie.print();
@@ -327,7 +327,7 @@ void aligenieColoTemp(int32_t colorTemp)
 
 void aligenieRelativeColoTemp(int32_t colorTemp)
 {
-    BLINKER_LOG2("need set relative colorTemperature: ", colorTemp);
+    BLINKER_LOG("need set relative colorTemperature: ", colorTemp);
 
     BlinkerAliGenie.colorTemp(colorTemp);
     BlinkerAliGenie.print();
@@ -335,12 +335,12 @@ void aligenieRelativeColoTemp(int32_t colorTemp)
 
 void aligenieQuery(int32_t queryCode)
 {
-    BLINKER_LOG2("AliGenie Query codes: ", queryCode);
+    BLINKER_LOG("AliGenie Query codes: ", queryCode);
 
     switch (queryCode)
     {
         case BLINKER_CMD_QUERY_ALL_NUMBER :
-            BLINKER_LOG1("AliGenie Query All");
+            BLINKER_LOG("AliGenie Query All");
             BlinkerAliGenie.powerState(wsState ? "on" : "off");
             BlinkerAliGenie.color(getColor());
             BlinkerAliGenie.mode(getLampMode());
@@ -349,27 +349,27 @@ void aligenieQuery(int32_t queryCode)
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_POWERSTATE_NUMBER :
-            BLINKER_LOG1("AliGenie Query Power State");
+            BLINKER_LOG("AliGenie Query Power State");
             BlinkerAliGenie.powerState(wsState ? "on" : "off");
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_COLOR_NUMBER :
-            BLINKER_LOG1("AliGenie Query Color");
+            BLINKER_LOG("AliGenie Query Color");
             BlinkerAliGenie.color(getColor());
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_MODE_NUMBER :
-            BLINKER_LOG1("AliGenie Query Mode");
+            BLINKER_LOG("AliGenie Query Mode");
             BlinkerAliGenie.mode(getLampMode());
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_COLORTEMP_NUMBER :
-            BLINKER_LOG1("AliGenie Query ColorTemperature");
+            BLINKER_LOG("AliGenie Query ColorTemperature");
             BlinkerAliGenie.colorTemp(50);
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_BRIGHTNESS_NUMBER :
-            BLINKER_LOG1("AliGenie Query Brightness");
+            BLINKER_LOG("AliGenie Query Brightness");
             BlinkerAliGenie.brightness(getBrightness());
             BlinkerAliGenie.print();
             break;
@@ -387,7 +387,7 @@ void aligenieQuery(int32_t queryCode)
 void button1_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    // BLINKER_LOG2("get button state: ", state);
+    // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
@@ -411,7 +411,7 @@ void button1_callback(const String & state)
 void button2_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    // BLINKER_LOG2("get button state: ", state);
+    // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
@@ -435,7 +435,7 @@ void button2_callback(const String & state)
 void button3_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    // BLINKER_LOG2("get button state: ", state);
+    // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
@@ -459,7 +459,7 @@ void button3_callback(const String & state)
 void button4_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    // BLINKER_LOG2("get button state: ", state);
+    // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
@@ -483,7 +483,7 @@ void button4_callback(const String & state)
 void button5_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    // BLINKER_LOG2("get button state: ", state);
+    // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
@@ -507,7 +507,7 @@ void button5_callback(const String & state)
 void button6_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    // BLINKER_LOG2("get button state: ", state);
+    // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
 
     for (uint8_t num = 0; num < 6; num++) {
@@ -531,7 +531,7 @@ void button6_callback(const String & state)
 void slider1_callback(int32_t value)
 {
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    BLINKER_LOG2("get slider value: ", value);
+    BLINKER_LOG("get slider value: ", value);
 
     setSpeed(value);
 }
@@ -539,10 +539,10 @@ void slider1_callback(int32_t value)
 void rgb1_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)
 {
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    BLINKER_LOG2("R value: ", r_value);
-    BLINKER_LOG2("G value: ", g_value);
-    BLINKER_LOG2("B value: ", b_value);
-    BLINKER_LOG2("Rrightness value: ", bright_value);
+    BLINKER_LOG("R value: ", r_value);
+    BLINKER_LOG("G value: ", g_value);
+    BLINKER_LOG("B value: ", b_value);
+    BLINKER_LOG("Rrightness value: ", bright_value);
 
     setStandard(bright_value << 24 | r_value << 16 | g_value << 8 | b_value);
 }
@@ -572,9 +572,9 @@ void heartbeat()
 
     spdSlider.print(getSpeed());
 
-    BLINKER_LOG1("heartbeat!");
+    BLINKER_LOG("heartbeat!");
 
-    BLINKER_LOG2("use time: ", millis() - now_time);
+    BLINKER_LOG("use time: ", millis() - now_time);
 }
 
 /* 
@@ -615,7 +615,7 @@ void singalClick()
 
     // Blinker.endFormat();
     
-    BLINKER_LOG1("Button clicked!");
+    BLINKER_LOG("Button clicked!");
 }
 
 /* 
@@ -627,7 +627,7 @@ void doubleClick()
 {
     setBrightness(random(0, 255));
     
-    BLINKER_LOG1("Button double clicked!");
+    BLINKER_LOG("Button double clicked!");
 }
 
 /* 
@@ -640,7 +640,7 @@ void longPressStart()
     isLongPress = true;
     press_start_time = millis();
 
-    BLINKER_LOG1("Button long press start!");
+    BLINKER_LOG("Button long press start!");
 }
 
 /* 
@@ -650,7 +650,7 @@ void longPressStart()
  */
 void longPressPowerdown()
 {
-    BLINKER_LOG1("Button long press powerdown!");
+    BLINKER_LOG("Button long press powerdown!");
 
     digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
@@ -664,7 +664,7 @@ void longPressReset()
 {
     ESP.restart();
 
-    BLINKER_LOG1("Button long press reset!");
+    BLINKER_LOG("Button long press reset!");
 }
 
 /* 
@@ -683,7 +683,7 @@ void longPressStop()
         longPressPowerdown();
     }
 
-    BLINKER_LOG1("Button long press stop!");
+    BLINKER_LOG("Button long press stop!");
 }
 
 double getBAT()
@@ -699,7 +699,7 @@ double getBAT()
 
     double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
-    // BLINKER_LOG2("bat: ", voltage);
+    // BLINKER_LOG("bat: ", voltage);
 
     return voltage;
 }
@@ -712,14 +712,14 @@ void batCheck()
 
         if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
             batBase = batRead;
-            BLINKER_ERR_LOG1("BLINKER_BAT_POWER_USEUP");
-            BLINKER_LOG6("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
+            BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
+            BLINKER_LOG("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
         }
         else {
             if (batRead > batBase) batBase = batRead;
         }
         
-        BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        BLINKER_LOG("bat: ", batRead / 10.0, " v");
 
         // fas fa-battery-full
         if (batRead >= 41) batNumber.icon("fas fa-battery-full");
