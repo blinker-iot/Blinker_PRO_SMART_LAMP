@@ -38,7 +38,7 @@ bool dataParse(const JsonObject & data)
 {
     String getData;
     data.printTo(getData);
-    BLINKER_LOG2("Get user command: ", getData);
+    BLINKER_LOG("Get user command: ", getData);
 
     bool isParsed = false;
 
@@ -178,7 +178,7 @@ bool dataParse(const JsonObject & data)
  */
 void heartbeat()
 {
-    BLINKER_LOG1("heartbeat!");
+    BLINKER_LOG("heartbeat!");
 }
 
 #if defined(BLINKER_BUTTON)
@@ -203,7 +203,7 @@ void singalClick()
 {
     modeChange();
     
-    BLINKER_LOG1("Button clicked!");
+    BLINKER_LOG("Button clicked!");
 }
 
 /* 
@@ -215,7 +215,7 @@ void doubleClick()
 {
     setBrightness(random(0, 255));
     
-    BLINKER_LOG1("Button double clicked!");
+    BLINKER_LOG("Button double clicked!");
 }
 
 /* 
@@ -228,7 +228,7 @@ void longPressStart()
     isLongPress = true;
     rainbowCycle();
 
-    BLINKER_LOG1("Button long press start!");
+    BLINKER_LOG("Button long press start!");
 }
 
 /* 
@@ -240,7 +240,7 @@ void longPressStop()
 {
     isLongPress = false;
 
-    BLINKER_LOG1("Button long press stop!");
+    BLINKER_LOG("Button long press stop!");
 }
 
 /* 
@@ -250,7 +250,7 @@ void longPressStop()
  */
 void longPressPowerdown()
 {
-    BLINKER_LOG1("Button long press powerdown!");
+    BLINKER_LOG("Button long press powerdown!");
 
     digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
@@ -262,7 +262,7 @@ void longPressPowerdown()
  */
 void longPressReset()
 {
-    BLINKER_LOG1("Button long press reset!");
+    BLINKER_LOG("Button long press reset!");
 }
 #endif
 
@@ -279,7 +279,7 @@ double getBAT()
 
     double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
-    // BLINKER_LOG2("bat: ", voltage);
+    // BLINKER_LOG("bat: ", voltage);
 
     return voltage;
 }
@@ -292,14 +292,14 @@ void batCheck()
 
         if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
             batBase = batRead;
-            BLINKER_ERR_LOG1("BLINKER_BAT_POWER_USEUP");
-            BLINKER_LOG6("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
+            BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
+            BLINKER_LOG("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
         }
         else {
             if (batRead > batBase) batBase = batRead;
         }
         
-        BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        BLINKER_LOG("bat: ", batRead / 10.0, " v");
         // BLINKER_LOG_FreeHeap();
 
         batFresh = millis();

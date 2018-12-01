@@ -761,6 +761,11 @@ void LAMP_init()
 {
     Serial.begin(115200);
 
+    #if defined(BLINKER_PRINT)
+        BLINKER_DEBUG.stream(BLINKER_PRINT);
+        BLINKER_DEBUG.debugAll();
+    #endif
+
     hardwareInit();
     ledInit();
 
