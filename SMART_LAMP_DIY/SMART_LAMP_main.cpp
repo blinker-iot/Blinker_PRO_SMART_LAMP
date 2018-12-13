@@ -12,7 +12,9 @@
 #define BLINKER_PRINT Serial
 #define BLINKER_MQTT
 #define BLINKER_ALIGENIE_LIGHT
-#define BLINKER_DEBUG_ALL
+#define BLINKER_ESP_SMARTCONFIG
+#define BLINKER_DUEROS_LIGHT
+// #define BLINKER_DEBUG_ALL
 
 #include <Blinker.h>
 
@@ -384,12 +386,194 @@ void aligenieQuery(int32_t queryCode)
     }
 }
 
+void duerPowerState(const String & state)
+{
+    BLINKER_LOG("need set power state: ", state);
+
+    if (state == BLINKER_CMD_ON) {
+        digitalWrite(LED_BUILTIN, HIGH);
+
+        BlinkerDuerOS.powerState("on");
+        BlinkerDuerOS.print();
+
+        wsState = true;
+
+        if (colorW == 0) colorW = 255;
+
+        setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+    else if (state == BLINKER_CMD_OFF) {
+        digitalWrite(LED_BUILTIN, LOW);
+
+        BlinkerDuerOS.powerState("off");
+        BlinkerDuerOS.print();
+
+        wsState = false;
+
+        colorW = 0;
+        colorR = 0; colorG = 0; colorB = 0;
+
+        setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+}
+
+void duerColor(int32_t color)
+{
+    BLINKER_LOG("need set color: ", color);
+
+    colorR = color >> 16 & 0xFF;
+    colorG = color >>  8 & 0xFF;
+    colorB = color       & 0xFF;
+
+    BLINKER_LOG("colorR: ", colorR, ", colorG: ", colorG, ", colorB: ", colorB);
+
+    wsState = true;
+    colorW = 255;
+
+    setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
+    // setBrightness(colorW);
+    setMode(BLINKER_LAMP_STANDARD);
+
+    BlinkerDuerOS.color(color);
+    BlinkerDuerOS.print();
+}
+
+void duerMode(const String & mode)
+{
+    BLINKER_LOG("need set mode: ", mode);
+
+    if (mode == BLINKER_CMD_DUEROS_READING) {
+        // Your mode function
+        colorR = 255; colorG = 255; colorB = 255;
+        setStandard(colorW << 24 | colorR << 16 | colorG << 8 | colorB);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+    else if (mode == BLINKER_CMD_DUEROS_ALARM) {
+        // Your mode function
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_RAINBOW_CYCLE);
+    }
+    else if (mode == BLINKER_CMD_DUEROS_SLEEP) {
+        // Your mode function
+        setMode(BLINKER_LAMP_BREATH);
+    }
+    else if (mode == BLINKER_CMD_DUEROS_NIGHT_LIGHT) {
+        // Your mode function
+        setMode(BLINKER_LAMP_RAINBOW);
+    }
+    else if (mode == BLINKER_CMD_DUEROS_ROMANTIC) {
+        // Your mode function
+        setMode(BLINKER_LAMP_STREAMER);
+    }
+    else {
+        // Your mode function
+        setStandard(colorR << 16 | colorG << 8 | colorB);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
+    }
+
+    wsMode = mode;
+
+    BlinkerDuerOS.mode(mode);
+    BlinkerDuerOS.print();
+}
+
+void duercMode(const String & cmode)
+{
+    BLINKER_LOG("need cancel mode: ", cmode);
+
+    if (cmode == BLINKER_CMD_DUEROS_READING) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_DUEROS_ALARM) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_DUEROS_SLEEP) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_DUEROS_NIGHT_LIGHT) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_DUEROS_ROMANTIC) {
+        // Your mode function
+    }
+    else if (cmode == BLINKER_CMD_COMMON) {
+        // Your mode function
+    }
+
+    wsMode = BLINKER_CMD_COMMON; // new mode
+
+    BlinkerDuerOS.mode(wsMode); // must response
+    BlinkerDuerOS.print();
+}
+
+void duerBright(const String & bright)
+{
+    BLINKER_LOG("need set brightness: ", bright);
+
+    if (bright == BLINKER_CMD_MAX) {
+        colorW = 255;
+    }
+    else if (bright == BLINKER_CMD_MIN) {
+        colorW = 0;
+    }
+    else {
+        colorW = bright.toInt();
+    }
+
+    BLINKER_LOG("now set brightness: ", colorW);
+
+    setBrightness(colorW);
+
+    BlinkerDuerOS.brightness(colorW);
+    BlinkerDuerOS.print();
+}
+
+void duerRelativeBright(int32_t bright)
+{
+    BLINKER_LOG("need set relative brightness: ", bright);
+
+    if (colorW + bright < 255 && colorW + bright >= 0) {
+        colorW += bright;
+    }
+
+    BLINKER_LOG("now set brightness: ", colorW);
+
+    setBrightness(colorW);
+
+    BlinkerDuerOS.brightness(bright);
+    BlinkerDuerOS.print();
+}
+
+void duerQuery(int32_t queryCode)
+{
+    BLINKER_LOG("DuerOS Query codes: ", queryCode);
+
+    switch (queryCode)
+    {
+        case BLINKER_CMD_QUERY_TIME_NUMBER :
+            BLINKER_LOG("DuerOS Query time");
+            BlinkerDuerOS.time(millis());
+            BlinkerDuerOS.print();
+            break;
+        default :
+            BlinkerDuerOS.time(millis());
+            BlinkerDuerOS.print();
+            break;
+    }
+}
+
 void button1_callback(const String & state)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     // BLINKER_LOG("get button state: ", state);
     // Blinker.beginFormat();
-
+    uint32_t n_time = millis();
     for (uint8_t num = 0; num < 6; num++) {
         if (num != 0) {
             Button[num]->color("#000000");
@@ -402,7 +586,7 @@ void button1_callback(const String & state)
     }
 
     spdSlider.print(getSpeed());
-
+    BLINKER_LOG("print use time: ", millis() - n_time);
     // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_RAINBOW_CYCLE);
@@ -776,7 +960,8 @@ void LAMP_init()
 
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
     
-    Blinker.begin(auth, ssid, pswd);
+    // Blinker.begin(auth, ssid, pswd);
+    Blinker.begin(auth);
     // Blinker.begin(ssid, pswd);
 
     Button[0] = new BlinkerButton(BUTTON_1, button1_callback);
@@ -802,6 +987,14 @@ void LAMP_init()
     BlinkerAliGenie.attachColorTemperature(aligenieColoTemp);
     BlinkerAliGenie.attachRelativeColorTemperature(aligenieRelativeColoTemp);
     BlinkerAliGenie.attachQuery(aligenieQuery);
+
+    BlinkerDuerOS.attachPowerState(duerPowerState);
+    BlinkerDuerOS.attachColor(duerColor);
+    BlinkerDuerOS.attachMode(duerMode);
+    BlinkerDuerOS.attachCancelMode(duercMode);
+    BlinkerDuerOS.attachBrightness(duerBright);
+    BlinkerDuerOS.attachRelativeBrightness(duerRelativeBright);
+    BlinkerDuerOS.attachQuery(duerQuery);
 
     // attachDelay(delays);
 }
