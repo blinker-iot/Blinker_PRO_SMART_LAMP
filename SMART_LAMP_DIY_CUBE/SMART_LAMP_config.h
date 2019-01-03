@@ -6,16 +6,16 @@
 #define BLINKER_WS2812_PIN              2
 #define BLINKER_WS2812_COUNT            16
 
-#define BLINKER_POWER_3V3_PIN           14
-#define BLINKER_POWER_5V_PIN            14//15
+// #define BLINKER_POWER_3V3_PIN           14
+// #define BLINKER_POWER_5V_PIN            14//15
 
-#define BLINKER_IIC_SCK_PIN             2
-#define BLINKER_IIC_SDA_PIN             0
+// #define BLINKER_IIC_SCK_PIN             2
+// #define BLINKER_IIC_SDA_PIN             0
 
-#define BLINKER_BAT_POWER_LOW           3.5
-#define BLINKER_BAT_POWER_HIGH          4.0
-#define BLINKER_BAT_POWER_USEUP         0.2
-#define BLINKER_BAT_CHECK_TIME          10000UL
+// #define BLINKER_BAT_POWER_LOW           3.5
+// #define BLINKER_BAT_POWER_HIGH          4.0
+// #define BLINKER_BAT_POWER_USEUP         0.2
+// #define BLINKER_BAT_CHECK_TIME          10000UL
 
 #define BLINKER_LAMP_COLOR_R            0
 #define BLINKER_LAMP_COLOR_G            1

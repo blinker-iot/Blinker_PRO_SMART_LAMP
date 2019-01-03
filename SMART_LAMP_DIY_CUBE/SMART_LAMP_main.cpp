@@ -12,15 +12,15 @@
 #define BLINKER_PRINT Serial
 #define BLINKER_MQTT
 #define BLINKER_ALIGENIE_LIGHT
-#define BLINKER_ESP_SMARTCONFIG
+// #define BLINKER_ESP_SMARTCONFIG
 #define BLINKER_DUEROS_LIGHT
 // #define BLINKER_DEBUG_ALL
 
 #include <Blinker.h>
 
-char auth[] = "Your MQTT Secret Key";
-char ssid[] = "Your WiFi network SSID or name";
-char pswd[] = "Your WiFi network WPA password or WEP key";
+char auth[] = "bc5a991c7ec4";
+char ssid[] = "mostfun";
+char pswd[] = "18038083873";
 
 #define BUTTON_1 "btn-rc"
 #define BUTTON_2 "btn-rb"
@@ -124,7 +124,7 @@ void aligeniePowerSate(const String & state)
     BLINKER_LOG("need set power state: ", state);
 
     if (state == BLINKER_CMD_ON) {
-        digitalWrite(LED_BUILTIN, HIGH);
+        // digitalWrite(LED_BUILTIN, HIGH);
 
         BlinkerAliGenie.powerState("on");
         BlinkerAliGenie.print();
@@ -132,9 +132,13 @@ void aligeniePowerSate(const String & state)
         wsState = true;
 
         if (colorW == 0) colorW = 255;
+
+        setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
     }
     else if (state == BLINKER_CMD_OFF) {
-        digitalWrite(LED_BUILTIN, LOW);
+        // digitalWrite(LED_BUILTIN, LOW);
 
         BlinkerAliGenie.powerState("off");
         BlinkerAliGenie.print();
@@ -391,7 +395,7 @@ void duerPowerState(const String & state)
     BLINKER_LOG("need set power state: ", state);
 
     if (state == BLINKER_CMD_ON) {
-        digitalWrite(LED_BUILTIN, HIGH);
+        // digitalWrite(LED_BUILTIN, HIGH);
 
         BlinkerDuerOS.powerState("on");
         BlinkerDuerOS.print();
@@ -405,7 +409,7 @@ void duerPowerState(const String & state)
         setMode(BLINKER_LAMP_STANDARD);
     }
     else if (state == BLINKER_CMD_OFF) {
-        digitalWrite(LED_BUILTIN, LOW);
+        // digitalWrite(LED_BUILTIN, LOW);
 
         BlinkerDuerOS.powerState("off");
         BlinkerDuerOS.print();
@@ -714,7 +718,7 @@ void button6_callback(const String & state)
 
 void slider1_callback(int32_t value)
 {
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     BLINKER_LOG("get slider value: ", value);
 
     setSpeed(value);
@@ -722,7 +726,7 @@ void slider1_callback(int32_t value)
 
 void rgb1_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)
 {
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     BLINKER_LOG("R value: ", r_value);
     BLINKER_LOG("G value: ", g_value);
     BLINKER_LOG("B value: ", b_value);
@@ -836,7 +840,7 @@ void longPressPowerdown()
 {
     BLINKER_LOG("Button long press powerdown!");
 
-    digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+    // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
 
 /* 
@@ -870,61 +874,61 @@ void longPressStop()
     BLINKER_LOG("Button long press stop!");
 }
 
-double getBAT()
-{
-    int sensorValue = analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
+// double getBAT()
+// {
+//     int sensorValue = analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
 
-    double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
+//     double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
-    // BLINKER_LOG("bat: ", voltage);
+//     // BLINKER_LOG("bat: ", voltage);
 
-    return voltage;
-}
+//     return voltage;
+// }
 
-void batCheck()
-{
-    if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
-    {
-        batRead = getBAT() * 10;
+// void batCheck()
+// {
+//     if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
+//     {
+//         batRead = getBAT() * 10;
 
-        if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
-            batBase = batRead;
-            BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
-            BLINKER_LOG("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
-        }
-        else {
-            if (batRead > batBase) batBase = batRead;
-        }
+//         if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
+//             batBase = batRead;
+//             BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
+//             BLINKER_LOG("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
+//         }
+//         else {
+//             if (batRead > batBase) batBase = batRead;
+//         }
         
-        BLINKER_LOG("bat: ", batRead / 10.0, " v");
+//         BLINKER_LOG("bat: ", batRead / 10.0, " v");
 
-        // fas fa-battery-full
-        if (batRead >= 41) batNumber.icon("fas fa-battery-full");
-        else if (batRead >= 40) batNumber.icon("fas fa-battery-three-quarters");
-        else if (batRead >= 39) batNumber.icon("fas fa-battery-half");
-        else if (batRead >= 38) batNumber.icon("fas fa-battery-quarter");
-        else batNumber.icon("fas fa-battery-empty");
+//         // fas fa-battery-full
+//         if (batRead >= 41) batNumber.icon("fas fa-battery-full");
+//         else if (batRead >= 40) batNumber.icon("fas fa-battery-three-quarters");
+//         else if (batRead >= 39) batNumber.icon("fas fa-battery-half");
+//         else if (batRead >= 38) batNumber.icon("fas fa-battery-quarter");
+//         else batNumber.icon("fas fa-battery-empty");
         
-        batNumber.color("#00FF00");
-        batNumber.unit("v");
-        batNumber.text("电量");
-        batNumber.print(batRead / 10.0);
-        // BLINKER_LOG_FreeHeap();
+//         batNumber.color("#00FF00");
+//         batNumber.unit("v");
+//         batNumber.text("电量");
+//         batNumber.print(batRead / 10.0);
+//         // BLINKER_LOG_FreeHeap();
 
-        batFresh = millis();
+//         batFresh = millis();
 
-        if (batRead < BLINKER_BAT_POWER_LOW * 10) {
-            // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
-        }
-    }
-}
+//         if (batRead < BLINKER_BAT_POWER_LOW * 10) {
+//             // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+//         }
+//     }
+// }
 
 // void delays(uint32_t ms)
 // {
@@ -933,12 +937,12 @@ void batCheck()
 
 void hardwareInit()
 {
-    pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
-    digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
-    pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
-    digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
+    // pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
+    // digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
+    // pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
+    // digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
-    batRead = getBAT() * 10;
+    // batRead = getBAT() * 10;
 }
 
 void LAMP_init()
@@ -960,8 +964,8 @@ void LAMP_init()
 
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
     
-    // Blinker.begin(auth, ssid, pswd);
-    Blinker.begin(auth);
+    Blinker.begin(auth, ssid, pswd);
+    // Blinker.begin(auth);
     // Blinker.begin(ssid, pswd);
 
     Button[0] = new BlinkerButton(BUTTON_1, button1_callback);
