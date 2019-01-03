@@ -30,8 +30,8 @@ void ledInit();
 
 void ledRun();
 
-void touckInit();
+// void touchInit();
 
-void touchTick();
+// void touchTick();
 
 #endif
