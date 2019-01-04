@@ -18,9 +18,9 @@
 
 #include <Blinker.h>
 
-char auth[] = "90305ee5f36d";
-char ssid[] = "mostfun";
-char pswd[] = "18038083873";
+char auth[] = "Your MQTT Secret Key";
+char ssid[] = "Your WiFi network SSID or name";
+char pswd[] = "Your WiFi network WPA password or WEP key";
 
 #define BUTTON_1 "btn-rc"
 #define BUTTON_2 "btn-rb"

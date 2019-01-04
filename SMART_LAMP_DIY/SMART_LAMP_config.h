@@ -7,7 +7,7 @@
 #define BLINKER_WS2812_COUNT            16
 
 #define BLINKER_POWER_3V3_PIN           14
-#define BLINKER_POWER_5V_PIN            14//15
+#define BLINKER_POWER_5V_PIN            15
 
 #define BLINKER_IIC_SCK_PIN             2
 #define BLINKER_IIC_SDA_PIN             0
