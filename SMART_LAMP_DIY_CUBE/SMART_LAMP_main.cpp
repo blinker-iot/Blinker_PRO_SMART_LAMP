@@ -18,7 +18,7 @@
 
 #include <Blinker.h>
 
-char auth[] = "bc5a991c7ec4";
+char auth[] = "90305ee5f36d";
 char ssid[] = "mostfun";
 char pswd[] = "18038083873";
 

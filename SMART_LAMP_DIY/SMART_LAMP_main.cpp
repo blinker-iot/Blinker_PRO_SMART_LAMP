@@ -132,6 +132,10 @@ void aligeniePowerSate(const String & state)
         wsState = true;
 
         if (colorW == 0) colorW = 255;
+
+        setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
+        // setBrightness(colorW);
+        setMode(BLINKER_LAMP_STANDARD);
     }
     else if (state == BLINKER_CMD_OFF) {
         digitalWrite(LED_BUILTIN, LOW);
