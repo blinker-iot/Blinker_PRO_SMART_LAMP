@@ -252,7 +252,7 @@ void longPressPowerdown()
 {
     BLINKER_LOG("Button long press powerdown!");
 
-    digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+    // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
 
 /* 
@@ -266,49 +266,49 @@ void longPressReset()
 }
 #endif
 
-double getBAT()
-{
-    int sensorValue = analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
-    sensorValue += analogRead(A0);
+// double getBAT()
+// {
+//     int sensorValue = analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
+//     sensorValue += analogRead(A0);
 
-    double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
+//     double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
-    // BLINKER_LOG("bat: ", voltage);
+//     // BLINKER_LOG("bat: ", voltage);
 
-    return voltage;
-}
+//     return voltage;
+// }
 
-void batCheck()
-{
-    if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
-    {
-        batRead = getBAT() * 10;
+// void batCheck()
+// {
+//     if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
+//     {
+//         batRead = getBAT() * 10;
 
-        if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
-            batBase = batRead;
-            BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
-            BLINKER_LOG("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
-        }
-        else {
-            if (batRead > batBase) batBase = batRead;
-        }
+//         if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
+//             batBase = batRead;
+//             BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
+//             BLINKER_LOG("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
+//         }
+//         else {
+//             if (batRead > batBase) batBase = batRead;
+//         }
         
-        BLINKER_LOG("bat: ", batRead / 10.0, " v");
-        // BLINKER_LOG_FreeHeap();
+//         BLINKER_LOG("bat: ", batRead / 10.0, " v");
+//         // BLINKER_LOG_FreeHeap();
 
-        batFresh = millis();
+//         batFresh = millis();
 
-        if (batRead < BLINKER_BAT_POWER_LOW * 10) {
-            digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
-        }
-    }
-}
+//         if (batRead < BLINKER_BAT_POWER_LOW * 10) {
+//             digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+//         }
+//     }
+// }
 
 // void delays(uint32_t ms)
 // {
@@ -317,14 +317,14 @@ void batCheck()
 
 void hardwareInit()
 {
-    pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
-    digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
-    pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
-    digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
+    // pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
+    // digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
+    // pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
+    // digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
-    touckInit();
+    // touchInit();
 
-    batRead = getBAT() * 10;
+    // batRead = getBAT() * 10;
 }
 
 void LAMP_init()
@@ -363,6 +363,6 @@ void LAMP_run()
         ledRun();
     }
 
-    touchTick();
+    // touchTick();
     // batCheck();
 }

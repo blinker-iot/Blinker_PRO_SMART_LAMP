@@ -20,8 +20,8 @@
 
 #define PIN 4
 
-#define BLINKER_POWER_3V3_PIN 14
-#define BLINKER_POWER_5V_PIN 15
+// #define BLINKER_POWER_3V3_PIN 14
+// #define BLINKER_POWER_5V_PIN 15
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -33,12 +33,12 @@
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BLINKER_WS2812_COUNT, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
-#include "OneButton.h"
+// #include "OneButton.h"
 
-OneButton buttonAdd(BLINKER_BUTTON_ADD_PIN, true);
-OneButton buttonSub(BLINKER_BUTTON_SUB_PIN, true);
-OneButton buttonEC0(BLINKER_BUTTON_EC0_PIN, true);
-OneButton buttonEC1(BLINKER_BUTTON_EC1_PIN, true);
+// OneButton buttonAdd(BLINKER_BUTTON_ADD_PIN, true);
+// OneButton buttonSub(BLINKER_BUTTON_SUB_PIN, true);
+// OneButton buttonEC0(BLINKER_BUTTON_EC0_PIN, true);
+// OneButton buttonEC1(BLINKER_BUTTON_EC1_PIN, true);
 
 static bool     change = false;
 static bool     lamp_state = true;
@@ -438,73 +438,73 @@ void checkState()
     }
 }
 
-void ec0Click()
-{
-    now_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
-    now_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+// void ec0Click()
+// {
+//     now_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+//     now_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
 
-    ecState = now_ec1 << 3 | now_ec0 << 2 | old_ec1 << 1 | old_ec0 << 0;
+//     ecState = now_ec1 << 3 | now_ec0 << 2 | old_ec1 << 1 | old_ec0 << 0;
 
-    checkState();
+//     checkState();
 
-    Serial.print("ecState: ");
-    Serial.print(now_ec1);
-    Serial.print(now_ec0);
-    Serial.print(old_ec1);
-    Serial.print(old_ec0);
-    Serial.print(" ");
-    Serial.print(ecState);
-    Serial.print(" position: ");
-    Serial.println(position);
-}
+//     Serial.print("ecState: ");
+//     Serial.print(now_ec1);
+//     Serial.print(now_ec0);
+//     Serial.print(old_ec1);
+//     Serial.print(old_ec0);
+//     Serial.print(" ");
+//     Serial.print(ecState);
+//     Serial.print(" position: ");
+//     Serial.println(position);
+// }
 
-void ec1Click()
-{
-    now_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
-    now_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+// void ec1Click()
+// {
+//     now_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+//     now_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
 
-    ecState = now_ec1 << 3 | now_ec0 << 2 | old_ec1 << 1 | old_ec0 << 0;
+//     ecState = now_ec1 << 3 | now_ec0 << 2 | old_ec1 << 1 | old_ec0 << 0;
 
-    checkState();
+//     checkState();
 
-    Serial.print("ecState: ");
-    Serial.print(now_ec1);
-    Serial.print(now_ec0);
-    Serial.print(old_ec1);
-    Serial.print(old_ec0);
-    Serial.print(" ");
-    Serial.print(ecState);
-    Serial.print(" position: ");
-    Serial.println(position);
-}
+//     Serial.print("ecState: ");
+//     Serial.print(now_ec1);
+//     Serial.print(now_ec0);
+//     Serial.print(old_ec1);
+//     Serial.print(old_ec0);
+//     Serial.print(" ");
+//     Serial.print(ecState);
+//     Serial.print(" position: ");
+//     Serial.println(position);
+// }
 
-void touchTick()
-{
-    // checkState();
+// void touchTick()
+// {
+//     // checkState();
 
-    buttonAdd.tick();
-    buttonSub.tick();
-    // buttonEC0.tick();
-    // buttonEC1.tick();
+//     buttonAdd.tick();
+//     buttonSub.tick();
+//     // buttonEC0.tick();
+//     // buttonEC1.tick();
 
-    // Serial.println("Button click.");
-    old_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
-    old_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
-}
+//     // Serial.println("Button click.");
+//     old_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+//     old_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+// }
 
-void touckInit()
-{
-    buttonAdd.attachClick(addClick);
-    buttonSub.attachClick(subClick);
-    buttonEC0.attachClick(ec0Click);
-    buttonEC1.attachClick(ec1Click);
+// void touchInit()
+// {
+//     buttonAdd.attachClick(addClick);
+//     buttonSub.attachClick(subClick);
+//     buttonEC0.attachClick(ec0Click);
+//     buttonEC1.attachClick(ec1Click);
 
-    attachInterrupt(BLINKER_BUTTON_ADD_PIN, touchTick, CHANGE);
-    attachInterrupt(BLINKER_BUTTON_SUB_PIN, touchTick, CHANGE);
-    attachInterrupt(BLINKER_BUTTON_EC0_PIN, ec0Click, CHANGE);
-    attachInterrupt(BLINKER_BUTTON_EC1_PIN, ec1Click, CHANGE);
+//     attachInterrupt(BLINKER_BUTTON_ADD_PIN, touchTick, CHANGE);
+//     attachInterrupt(BLINKER_BUTTON_SUB_PIN, touchTick, CHANGE);
+//     attachInterrupt(BLINKER_BUTTON_EC0_PIN, ec0Click, CHANGE);
+//     attachInterrupt(BLINKER_BUTTON_EC1_PIN, ec1Click, CHANGE);
 
-    old_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
-    old_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
-}
+//     old_ec0 = !digitalRead(BLINKER_BUTTON_EC0_PIN);
+//     old_ec1 = !digitalRead(BLINKER_BUTTON_EC1_PIN);
+// }
 
