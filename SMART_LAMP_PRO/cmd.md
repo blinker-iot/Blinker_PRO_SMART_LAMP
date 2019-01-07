@@ -21,6 +21,14 @@
 ```
 {
     "set":{
+        "swi":"on"
+    }
+}
+```
+## SET STATUS
+```
+{
+    "set":{
         "run":1
     }
 }
@@ -39,19 +47,25 @@
     "spd":100
 }
 ```
+## SET BRIGHT
+```
+{
+    "brt":100
+}
+```
 > **mode:**
-> BLINKER_CMD_LAMP_RAINBOW_CYCLE  "raic"  
-> BLINKER_CMD_LAMP_RAINBOW        "rai"  
-> BLINKER_CMD_LAMP_RAINBOW_STROBE "rais"  
+> BLINKER_CMD_LAMP_RAINBOW_CYCLE  "rc"  
+> BLINKER_CMD_LAMP_RAINBOW        "rb"  
+> BLINKER_CMD_LAMP_RAINBOW_STROBE "stb"  
 > BLINKER_CMD_LAMP_STANDARD       "std"  
 > BLINKER_CMD_LAMP_BREATH         "bre"  
-> BLINKER_CMD_LAMP_STREAMER       "stm"  
+> BLINKER_CMD_LAMP_STREAMER       "str"  
 
 ### LAMP_STREAMER
-除streamer(多色流光渐变, 渐变到设定颜色时保持一定时间)外, 可以不设置 **run** (state)  
+除streamer(多色流光渐变, 渐变到设定颜色时保持一定时间)外, 可以不设置 **run** (STATUS)  
 > 暂定四色流光渐变  
 
-在设置streamer的多色时需将state置0, 用户方便观察设定颜色  
+在设置streamer的多色时需将 STATUS 置0, 用户方便观察设定颜色  
 ```
 {
     "set":{

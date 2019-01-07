@@ -16,7 +16,7 @@
 #define BLINKER_BUTTON
 #define BLINKER_BUTTON_PULLDOWN
 #define BLINKER_BUTTON_LONGPRESS_POWERDOWN
-#define BLINKER_BUTTON_PIN 12
+#define BLINKER_BUTTON_PIN 15
 
 #include <Blinker.h>
 
@@ -330,6 +330,9 @@ void hardwareInit()
 void LAMP_init()
 {
     Serial.begin(115200);
+
+    BLINKER_DEBUG.stream(Serial);
+    BLINKER_DEBUG.debugAll();
 
     hardwareInit();
     ledInit();

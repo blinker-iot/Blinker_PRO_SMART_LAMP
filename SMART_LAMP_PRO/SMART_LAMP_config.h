@@ -8,8 +8,8 @@
 // #define BLINKER_BUTTON_EC0_PIN          0
 // #define BLINKER_BUTTON_EC1_PIN          4
 
-#define BLINKER_WS2812_PIN              13
-#define BLINKER_WS2812_COUNT            24
+#define BLINKER_WS2812_PIN              2
+#define BLINKER_WS2812_COUNT            16
 
 // #define BLINKER_POWER_3V3_PIN           14
 // #define BLINKER_POWER_5V_PIN            15
@@ -36,17 +36,18 @@
 #define BLINKER_LAMP_BREATH             4
 #define BLINKER_LAMP_RAINBOW_STROBE     5
 
-#define BLINKER_CMD_LAMP_RAINBOW_CYCLE  "raic"
-#define BLINKER_CMD_LAMP_RAINBOW        "rai"
-#define BLINKER_CMD_LAMP_RAINBOW_STROBE "rais"
+#define BLINKER_CMD_LAMP_RAINBOW_CYCLE  "rc"
+#define BLINKER_CMD_LAMP_RAINBOW        "rb"
+#define BLINKER_CMD_LAMP_RAINBOW_STROBE "stb"
 #define BLINKER_CMD_LAMP_STANDARD       "std"
 #define BLINKER_CMD_LAMP_BREATH         "bre"
-#define BLINKER_CMD_LAMP_STREAMER       "stm"
+#define BLINKER_CMD_LAMP_STREAMER       "str"
 
 #define BLINKER_CMD_LAMP_MODE           "mode"
 #define BLINKER_CMD_LAMP_COLOR          "clr"
 #define BLINKER_CMD_LAMP_RUN            "run"
 #define BLINKER_CMD_LAMP_SPEED          "spd"
+#define BLINKER_CMD_LAMP_BRIGHT         "brt"
 
 #define BLINKER_CMD_STREAMER_COLOR      "stmc"
 #define BLINKER_CMD_STREAMER_COLOR0     "stmc0"

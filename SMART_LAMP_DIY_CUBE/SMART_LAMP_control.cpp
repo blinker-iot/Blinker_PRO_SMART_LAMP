@@ -56,6 +56,8 @@ bool needFresh()
 
     if (_lampSpeed < 256) _lampSpeed = 256;
 
+    yield();
+
     if ((millis() - freshStart) >= (_lampSpeed / 256)) {
         freshStart = millis();
         return true;
@@ -117,7 +119,7 @@ void rainbowCycleDisplay() {
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + lampStep) & 255));
     }
-    lampStep = (lampStep + 1) & 0xFF;
+    lampStep = (lampStep + getSpeed()/25) & 0xFF;
 
     strip.show();
     // lampFresh(lampSpeed);

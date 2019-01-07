@@ -327,6 +327,11 @@ void setBrightness(uint8_t bright)
     strip.setBrightness(bright);
 }
 
+uint8_t getBrightness()
+{
+    return strip.getBrightness();
+}
+
 void setSpeed(uint8_t speed)
 {
     // speed = speed * 256;
@@ -337,6 +342,11 @@ void setSpeed(uint8_t speed)
     
     lampSpeed = map(speed, 0, 128, BLINKER_LAMP_SPEED_MIN, BLINKER_LAMP_SPEED_MAX);
     _lampSpeed = lampSpeed;
+}
+
+uint8_t getSpeed()
+{
+    return map(lampSpeed, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN, 0, 128);
 }
 
 void modeChange()
