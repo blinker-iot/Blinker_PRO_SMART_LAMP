@@ -12,7 +12,7 @@
 #define BLINKER_PRINT Serial
 #define BLINKER_MQTT
 #define BLINKER_ALIGENIE_LIGHT
-// #define BLINKER_ESP_SMARTCONFIG
+#define BLINKER_ESP_SMARTCONFIG
 #define BLINKER_DUEROS_LIGHT
 // #define BLINKER_DEBUG_ALL
 
@@ -35,6 +35,10 @@ BlinkerButton * Button[6];
 
 BlinkerSlider spdSlider(Slider_1);
 
+#define Slider_2 "brt"
+
+BlinkerSlider brtSlider(Slider_2);
+
 #define Number_1 "bat"
 
 BlinkerNumber batNumber(Number_1);
@@ -56,6 +60,7 @@ static bool isLongPress = false;
 static uint8_t batRead;
 static uint8_t batBase;
 static uint32_t lamp_speed;
+static uint32_t lamp_bright;
 static uint32_t batFresh = 0;
 static uint32_t press_start_time;
 static uint16_t pressed_time;
@@ -131,11 +136,20 @@ void aligeniePowerSate(const String & state)
 
         wsState = true;
 
-        if (colorW == 0) colorW = 255;
+        // if (colorW == 0) colorW = 255;
 
-        setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
-        // setBrightness(colorW);
-        setMode(BLINKER_LAMP_STANDARD);
+        // setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
+
+        if (lamp_bright != 0)
+        {
+            setBrightness(lamp_bright);
+        }
+        else
+        {
+            setBrightness(255);
+        }
+
+        // setMode(BLINKER_LAMP_STANDARD);
     }
     else if (state == BLINKER_CMD_OFF) {
         // digitalWrite(LED_BUILTIN, LOW);
@@ -145,12 +159,15 @@ void aligeniePowerSate(const String & state)
 
         wsState = false;
 
-        colorW = 0;
-        colorR = 0; colorG = 0; colorB = 0;
+        // colorW = 0;
+        // colorR = 0; colorG = 0; colorB = 0;
 
-        setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
-        // setBrightness(colorW);
-        setMode(BLINKER_LAMP_STANDARD);
+        // setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
+        
+        lamp_bright = getBrightness();
+        setBrightness(0);
+
+        // setMode(BLINKER_LAMP_STANDARD);
     }
 }
 
@@ -402,11 +419,20 @@ void duerPowerState(const String & state)
 
         wsState = true;
 
-        if (colorW == 0) colorW = 255;
+        // if (colorW == 0) colorW = 255;
 
-        setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
-        // setBrightness(colorW);
-        setMode(BLINKER_LAMP_STANDARD);
+        // setStandard(255 << 24 | 255 << 16 | 255 << 8 | 255);
+        
+        if (lamp_bright != 0)
+        {
+            setBrightness(lamp_bright);
+        }
+        else
+        {
+            setBrightness(255);
+        }
+
+        // setMode(BLINKER_LAMP_STANDARD);
     }
     else if (state == BLINKER_CMD_OFF) {
         // digitalWrite(LED_BUILTIN, LOW);
@@ -416,12 +442,15 @@ void duerPowerState(const String & state)
 
         wsState = false;
 
-        colorW = 0;
-        colorR = 0; colorG = 0; colorB = 0;
+        // colorW = 0;
+        // colorR = 0; colorG = 0; colorB = 0;
 
-        setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
-        // setBrightness(colorW);
-        setMode(BLINKER_LAMP_STANDARD);
+        // setStandard(colorW << 24 |colorR << 16 | colorG << 8 | colorB);
+        
+        lamp_bright = getBrightness();
+        setBrightness(0);
+
+        // setMode(BLINKER_LAMP_STANDARD);
     }
 }
 
@@ -590,6 +619,9 @@ void button1_callback(const String & state)
     }
 
     spdSlider.print(getSpeed());
+
+    brtSlider.print(getBrightness());
+
     BLINKER_LOG("print use time: ", millis() - n_time);
     // Blinker.endFormat();
 
@@ -615,6 +647,8 @@ void button2_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
+    brtSlider.print(getBrightness());
+
     // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_RAINBOW);
@@ -638,6 +672,8 @@ void button3_callback(const String & state)
     }
 
     spdSlider.print(getSpeed());
+
+    brtSlider.print(getBrightness());
 
     // Blinker.endFormat();
 
@@ -663,6 +699,8 @@ void button4_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
+    brtSlider.print(getBrightness());
+
     // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_STANDARD);
@@ -686,6 +724,8 @@ void button5_callback(const String & state)
     }
 
     spdSlider.print(getSpeed());
+
+    brtSlider.print(getBrightness());
 
     // Blinker.endFormat();
 
@@ -711,6 +751,8 @@ void button6_callback(const String & state)
 
     spdSlider.print(getSpeed());
 
+    brtSlider.print(getBrightness());
+
     // Blinker.endFormat();
 
     setLampMode(BLINKER_LAMP_RAINBOW_STROBE);
@@ -719,9 +761,17 @@ void button6_callback(const String & state)
 void slider1_callback(int32_t value)
 {
     // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    BLINKER_LOG("get slider value: ", value);
+    BLINKER_LOG("get speed slider value: ", value);
 
     setSpeed(value);
+}
+
+void slider2_callback(int32_t value)
+{
+    // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    BLINKER_LOG("get bright slider value: ", value);
+
+    setBrightness(value);
 }
 
 void rgb1_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t bright_value)
@@ -759,6 +809,8 @@ void heartbeat()
     }
 
     spdSlider.print(getSpeed());
+
+    brtSlider.print(getBrightness());
 
     BLINKER_LOG("heartbeat!");
 
@@ -800,6 +852,8 @@ void singalClick()
     }
 
     spdSlider.print(getSpeed());
+
+    brtSlider.print(getBrightness());
 
     // Blinker.endFormat();
     
@@ -964,8 +1018,8 @@ void LAMP_init()
 
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
     
-    Blinker.begin(auth, ssid, pswd);
-    // Blinker.begin(auth);
+    // Blinker.begin(auth, ssid, pswd);
+    Blinker.begin(auth);
     // Blinker.begin(ssid, pswd);
 
     Button[0] = new BlinkerButton(BUTTON_1, button1_callback);
@@ -976,6 +1030,7 @@ void LAMP_init()
     Button[5] = new BlinkerButton(BUTTON_6, button6_callback);
 
     spdSlider.attach(slider1_callback);
+    brtSlider.attach(slider2_callback);
 
     RGB.attach(rgb1_callback);
 
