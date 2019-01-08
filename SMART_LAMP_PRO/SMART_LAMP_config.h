@@ -35,6 +35,7 @@
 #define BLINKER_LAMP_STANDARD           3
 #define BLINKER_LAMP_BREATH             4
 #define BLINKER_LAMP_RAINBOW_STROBE     5
+#define BLINKER_LAMP_SUNLIGHT           6
 
 #define BLINKER_CMD_LAMP_RAINBOW_CYCLE  "rc"
 #define BLINKER_CMD_LAMP_RAINBOW        "rb"
@@ -42,6 +43,7 @@
 #define BLINKER_CMD_LAMP_STANDARD       "std"
 #define BLINKER_CMD_LAMP_BREATH         "bre"
 #define BLINKER_CMD_LAMP_STREAMER       "str"
+#define BLINKER_CMD_LAMP_SUNLIGHT       "sun"
 
 #define BLINKER_CMD_LAMP_MODE           "mode"
 #define BLINKER_CMD_LAMP_COLOR          "clr"

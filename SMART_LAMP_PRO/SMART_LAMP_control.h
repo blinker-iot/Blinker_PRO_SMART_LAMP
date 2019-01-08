@@ -10,6 +10,8 @@ void resetDisplay(uint16_t _time);
 
 void setStandard(uint32_t color);
 
+void setSunlight(uint32_t color);
+
 void setStreamer(uint8_t num, uint32_t color);
 
 void setStreamer(uint32_t *color);
@@ -17,6 +19,10 @@ void setStreamer(uint32_t *color);
 void setBrightness(uint8_t bright);
 
 uint8_t getBrightness();
+
+String getColor();
+
+String getMode();
 
 void setSpeed(uint8_t speed);
 

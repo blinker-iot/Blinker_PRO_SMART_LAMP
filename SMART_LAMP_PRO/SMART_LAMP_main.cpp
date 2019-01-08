@@ -24,9 +24,11 @@
 
 static bool inited = false;
 static bool isLongPress = false;
+// static bool powerState = false;
 static uint8_t batRead;
 static uint8_t batBase;
 static uint32_t batFresh = 0;
+static uint32_t lamp_bright;
 
 /* 
  * Add your command parse code in this function
@@ -42,65 +44,131 @@ bool dataParse(const JsonObject & data)
 
     bool isParsed = false;
 
-    if (data.containsKey(BLINKER_CMD_SET)) {
+    if (data.containsKey(BLINKER_CMD_SET))
+    {
         String setData = data[BLINKER_CMD_SET];
 
         DynamicJsonBuffer jsonBuffer;
         JsonObject& setJson = jsonBuffer.parseObject(setData);
 
-        if (!setJson.success()) {
+        if (!setJson.success())
+        {
             return false;
         }
 
         String setMode = setJson[BLINKER_CMD_LAMP_MODE];
 
-        if (setMode == BLINKER_CMD_LAMP_RAINBOW_CYCLE) {
+        if (setJson.containsKey(BLINKER_CMD_SWITCH))
+        {
+            String swData = setJson[BLINKER_CMD_SWITCH];
+
+            if (swData == BLINKER_CMD_ON)
+            {
+                if (lamp_bright != 0)
+                {
+                    setBrightness(lamp_bright);
+                }
+                else
+                {
+                    setBrightness(255);
+                }
+
+                // powerState = true;
+            }
+            else if (swData == BLINKER_CMD_OFF)
+            {
+                lamp_bright = getBrightness();
+                setBrightness(0);
+
+                // powerState = false;
+            }
+        }
+
+        if (setMode == BLINKER_CMD_LAMP_RAINBOW_CYCLE)
+        {
             setLampMode(BLINKER_LAMP_RAINBOW_CYCLE);
             isParsed = true;
         }
-        else if (setMode == BLINKER_CMD_LAMP_RAINBOW) {
+        else if (setMode == BLINKER_CMD_LAMP_RAINBOW)
+        {
             setLampMode(BLINKER_LAMP_RAINBOW);
             isParsed = true;
         }
-        else if (setMode == BLINKER_CMD_LAMP_RAINBOW_STROBE) {
+        else if (setMode == BLINKER_CMD_LAMP_RAINBOW_STROBE)
+        {
             setLampMode(BLINKER_LAMP_RAINBOW_STROBE);
             isParsed = true;
         }
-        else if (setMode == BLINKER_CMD_LAMP_STANDARD) {
+        else if (setMode == BLINKER_CMD_LAMP_STANDARD)
+        {
             setLampMode(BLINKER_LAMP_STANDARD);
+            
+            if (setJson.containsKey(BLINKER_CMD_LAMP_COLOR))
+            {
+                uint8_t std_r = setJson[BLINKER_CMD_LAMP_COLOR][0];
+                uint8_t std_g = setJson[BLINKER_CMD_LAMP_COLOR][1];
+                uint8_t std_b = setJson[BLINKER_CMD_LAMP_COLOR][2];
+                uint8_t std_w = setJson[BLINKER_CMD_LAMP_COLOR][3];
+                
+                setStandard(std_w << 24 | std_r << 16 | std_g << 8 | std_b);
+            }
+
             isParsed = true;
         }
-        else if (setMode == BLINKER_CMD_LAMP_BREATH) {
+        else if (setMode == BLINKER_CMD_LAMP_BREATH)
+        {
             setLampMode(BLINKER_LAMP_BREATH);
             isParsed = true;
         }
-        else if (setMode == BLINKER_CMD_LAMP_STREAMER) {
+        else if (setMode == BLINKER_CMD_LAMP_SUNLIGHT)
+        {
+            setLampMode(BLINKER_LAMP_SUNLIGHT);
+
+            if (setJson.containsKey(BLINKER_CMD_LAMP_COLOR))
+            {
+                uint8_t sun_r = setJson[BLINKER_CMD_LAMP_COLOR][0];
+                uint8_t sun_g = setJson[BLINKER_CMD_LAMP_COLOR][1];
+                uint8_t sun_b = setJson[BLINKER_CMD_LAMP_COLOR][2];
+                uint8_t sun_w = setJson[BLINKER_CMD_LAMP_COLOR][3];
+                
+                setSunlight(sun_w << 24 | sun_r << 16 | sun_g << 8 | sun_b);
+            }
+            
+            isParsed = true;
+        }
+        else if (setMode == BLINKER_CMD_LAMP_STREAMER)
+        {
             uint8_t state = setJson[BLINKER_CMD_LAMP_RUN];
             setLampMode(BLINKER_LAMP_STREAMER, state);
             
-            if (!state) {
-                if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR0)) {
+            if (!state)
+            {
+                if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR0))
+                {
                     uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR0][0];
                     uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR0][1];
                     uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR0][2];
 
                     setStreamer(0, stm_r << 16 | stm_g << 8 | stm_r);
                 }
-                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR1)) {
+                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR1))
+                {
                     uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR1][0];
                     uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR1][1];
                     uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR1][2];
 
                     setStreamer(1, stm_r << 16 | stm_g << 8 | stm_r);
                 }
-                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR2)) {
+                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR2))
+                {
                     uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR2][0];
                     uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR2][1];
                     uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR2][2];
 
                     setStreamer(2, stm_r << 16 | stm_g << 8 | stm_r);
                 }
-                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR3)) {
+                else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR3))
+                {
                     uint8_t stm_r = setJson[BLINKER_CMD_STREAMER_COLOR3][0];
                     uint8_t stm_g = setJson[BLINKER_CMD_STREAMER_COLOR3][1];
                     uint8_t stm_b = setJson[BLINKER_CMD_STREAMER_COLOR3][2];
@@ -108,11 +176,13 @@ bool dataParse(const JsonObject & data)
                     setStreamer(3, stm_r << 16 | stm_g << 8 | stm_r);
                 }
             }
-            else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR)) {
+            else if (setJson.containsKey(BLINKER_CMD_STREAMER_COLOR))
+            {
                 uint32_t stm_clr[4];
                 uint8_t  clr_get;
 
-                for (uint8_t num = 0; num < 4; num++) {
+                for (uint8_t num = 0; num < 4; num++)
+                {
                     clr_get = setJson[BLINKER_CMD_STREAMER_COLOR][num][0];
                     stm_clr[num] = clr_get;
                     clr_get = setJson[BLINKER_CMD_STREAMER_COLOR][num][1];
@@ -127,7 +197,8 @@ bool dataParse(const JsonObject & data)
             isParsed = true;
         }
 
-        if (setJson.containsKey(BLINKER_CMD_LAMP_COLOR)) {
+        if (setJson.containsKey(BLINKER_CMD_LAMP_COLOR))
+        {
             uint32_t set_clr;
             uint8_t  clr;
 
@@ -143,22 +214,38 @@ bool dataParse(const JsonObject & data)
             setStandard(set_clr);
         }
 
-        if (setJson.containsKey(BLINKER_CMD_LAMP_SPEED)) {
+        if (setJson.containsKey(BLINKER_CMD_LAMP_SPEED))
+        {
             uint8_t speed = setJson[BLINKER_CMD_LAMP_SPEED];
 
             setSpeed(speed);
         }
+
+        if (setJson.containsKey(BLINKER_CMD_LAMP_BRIGHT))
+        {
+            uint8_t bright = setJson[BLINKER_CMD_LAMP_BRIGHT];
+
+            setBrightness(bright);
+        }
     }
-    else if (data.containsKey(BLINKER_CMD_GET)) {
+    else if (data.containsKey(BLINKER_CMD_GET))
+    {
         String getData = data[BLINKER_CMD_GET];
 
         DynamicJsonBuffer jsonBuffer;
         JsonObject& getJson = jsonBuffer.parseObject(getData);
 
-        if (!getJson.success()) {
+        if (!getJson.success())
+        {
             return false;
         }
-    }
+    }    
+    
+    Blinker.print(BLINKER_CMD_LAMP_MODE, getMode());
+    Blinker.print(BLINKER_CMD_LAMP_SPEED, getSpeed());
+    Blinker.print(BLINKER_CMD_LAMP_BRIGHT, getBrightness());
+    Blinker.print(BLINKER_CMD_SWITCH, getBrightness() ? "on" : " off");
+    Blinker.printArray(BLINKER_CMD_LAMP_COLOR, getColor());
 
     if (isParsed) {
         return true;
@@ -178,6 +265,12 @@ bool dataParse(const JsonObject & data)
  */
 void heartbeat()
 {
+    Blinker.print(BLINKER_CMD_LAMP_MODE, getMode());
+    Blinker.print(BLINKER_CMD_LAMP_SPEED, getSpeed());
+    Blinker.print(BLINKER_CMD_LAMP_BRIGHT, getBrightness());
+    Blinker.print(BLINKER_CMD_SWITCH, getBrightness() ? BLINKER_CMD_ON : BLINKER_CMD_OFF);
+    Blinker.printArray(BLINKER_CMD_LAMP_COLOR, getColor());
+
     BLINKER_LOG("heartbeat!");
 }
 

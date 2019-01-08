@@ -60,6 +60,7 @@
 > BLINKER_CMD_LAMP_STANDARD       "std"  
 > BLINKER_CMD_LAMP_BREATH         "bre"  
 > BLINKER_CMD_LAMP_STREAMER       "str"  
+> BLINKER_CMD_LAMP_SUNLIGHT       "sun"
 
 ### LAMP_STREAMER
 除streamer(多色流光渐变, 渐变到设定颜色时保持一定时间)外, 可以不设置 **run** (STATUS)  
