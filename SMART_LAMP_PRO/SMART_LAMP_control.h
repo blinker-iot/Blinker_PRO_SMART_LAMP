@@ -8,13 +8,21 @@
 // void lampDelay(uint32_t ms);
 void resetDisplay(uint16_t _time);
 
+void setColor(uint32_t color);
+
 void setStandard(uint32_t color);
+
+void setBreath(uint32_t color);
+
+void setStrobe(uint32_t color);
+
+uint32_t kelvin2RGB(uint8_t set);
 
 void setSunlight(uint32_t color);
 
-void setStreamer(uint8_t num, uint32_t color);
+void setGradient(uint8_t num, uint32_t color);
 
-void setStreamer(uint32_t *color);
+void setGradient(uint32_t *color);
 
 void setBrightness(uint8_t bright);
 

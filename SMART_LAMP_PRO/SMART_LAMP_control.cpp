@@ -48,14 +48,15 @@ static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t _lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
 
-static uint32_t stream_color[4] = {0xff0000, 0x00ff00, 0x0000ff, 0xffffff};
+static uint32_t gradient_color[4] = {0xff0000, 0x00ff00, 0x0000ff, 0xffffff};
 static uint8_t  stream_num = 0;
 static uint8_t  stream_count = 4;
-static uint32_t stream_color_standard = 0;
+static uint32_t gradient_color_standard = 0;
 
 static uint32_t standard_color = 0x88ff0088;
-
-static uint32_t sunlight_color = 0xffffdbba;
+static uint32_t sunlight_color = BLINKER_COLOR_TEMP_MIN;
+static uint32_t breath_color = 0xffffdbba;
+static uint32_t strobe_color = 0x88ff0088;
 
 static bool     old_ec0;
 static bool     old_ec1;
@@ -141,9 +142,9 @@ void rainbowCycleDisplay() {
 // uint32_t streamer(uint32_t c) {
 uint32_t streamer() {
     if (!lamp_state) {
-        uint8_t r   = (stream_color_standard >> 16 & 0xFF);
-        uint8_t g   = (stream_color_standard >>  8 & 0xFF);
-        uint8_t b   = (stream_color_standard       & 0xFF);
+        uint8_t r   = (gradient_color_standard >> 16 & 0xFF);
+        uint8_t g   = (gradient_color_standard >>  8 & 0xFF);
+        uint8_t b   = (gradient_color_standard       & 0xFF);
 
         for(uint8_t i=0; i < strip.numPixels(); i++) {
             strip.setPixelColor(i, r, g, b);
@@ -161,7 +162,7 @@ uint32_t streamer() {
     uint16_t start_lum = 64;
     uint16_t end_lum = 448;
 
-    uint32_t c = stream_color[stream_num];
+    uint32_t c = gradient_color[stream_num];
 
     uint8_t now_r = (c >> 16 & 0xFF);
     uint8_t now_g = (c >>  8 & 0xFF);
@@ -171,7 +172,7 @@ uint32_t streamer() {
 
     if (lum < end_lum) next_num = (stream_num + stream_count - 1) % stream_count;
 
-    uint32_t next_c = stream_color[next_num];
+    uint32_t next_c = gradient_color[next_num];
 
     uint8_t next_r = (next_c >> 16 & 0xFF);
     uint8_t next_g = (next_c >>  8 & 0xFF);
@@ -214,9 +215,9 @@ uint32_t streamer() {
 void standard()
 {
     uint8_t lum = (standard_color >> 24 & 0xFF);
-    uint8_t r   = (standard_color >> 16 & 0xFF) * lum / 256;
-    uint8_t g   = (standard_color >>  8 & 0xFF) * lum / 256;
-    uint8_t b   = (standard_color       & 0xFF) * lum / 256;
+    uint8_t r   = (standard_color >> 16 & 0xFF);
+    uint8_t g   = (standard_color >>  8 & 0xFF);
+    uint8_t b   = (standard_color       & 0xFF);
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -228,9 +229,9 @@ void standard()
 void sunlight()
 {
     uint8_t lum = (sunlight_color >> 24 & 0xFF);
-    uint8_t r   = (sunlight_color >> 16 & 0xFF) * lum / 256;
-    uint8_t g   = (sunlight_color >>  8 & 0xFF) * lum / 256;
-    uint8_t b   = (sunlight_color       & 0xFF) * lum / 256;
+    uint8_t r   = (sunlight_color >> 16 & 0xFF);
+    uint8_t g   = (sunlight_color >>  8 & 0xFF);
+    uint8_t b   = (sunlight_color       & 0xFF);
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -255,10 +256,10 @@ uint32_t breath()
     else _delay = lampSpeed * 1 / 2;//10; // 4
 
     // uint32_t color = SEGMENT.colors[0];
-    // uint8_t w = (standard_color >> 24 & 0xFF) * lum / 256;
-    uint8_t r = (standard_color >> 16 & 0xFF) * lum / 256;
-    uint8_t g = (standard_color >>  8 & 0xFF) * lum / 256;
-    uint8_t b = (standard_color       & 0xFF) * lum / 256;
+    // uint8_t w = (breath_color >> 24 & 0xFF) * lum / 256;
+    uint8_t r = (breath_color >> 16 & 0xFF) * lum / 256;
+    uint8_t g = (breath_color >>  8 & 0xFF) * lum / 256;
+    uint8_t b = (breath_color       & 0xFF) * lum / 256;
     for(uint16_t i = 0; i <= strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
     }
@@ -271,14 +272,15 @@ uint32_t breath()
     return _delay;
 }
 
-uint32_t rainbowStrobe()
+uint32_t strobe()
 {
     uint32_t c;
     uint32_t _delay;
     if (lampStep % 2) {
         // c = Wheel(lampStep);
-        c = Wheel(random(0, 255));
-        _delay = 5000;
+        // c = Wheel(random(0, 255));
+        c = strobe_color;
+        _delay = 5000;//lampSpeed * 20;
     }
     else {
         c = 0;
@@ -320,27 +322,101 @@ void resetDisplay(uint16_t _time)
 //     _lampDelay = newFunc;
 // }
 
+void setColor(uint32_t color)
+{
+    switch(lampType) {
+        case BLINKER_LAMP_RAINBOW_CYCLE :
+            break;
+        case BLINKER_LAMP_RAINBOW :
+            break;
+        case BLINKER_LAMP_GRADIENT :
+            break;
+        case BLINKER_LAMP_STANDARD :
+            setStandard(color);
+            break;
+        case BLINKER_LAMP_BREATH :
+            setBreath(color);
+            break;
+        case BLINKER_LAMP_STROBE :
+            setStrobe(color);
+            break;
+        case BLINKER_LAMP_SUNLIGHT :
+            setSunlight(color);
+            break;
+        default :
+            break;
+    }
+}
+
 void setStandard(uint32_t color)
 {
+    if (color == 0) return;
     standard_color = color;
+}
+
+void setBreath(uint32_t color)
+{
+    if (color == 0) return;
+    breath_color = color;
+}
+
+void setStrobe(uint32_t color)
+{
+    if (color == 0) return;
+    strobe_color = color;
+}
+
+uint32_t kelvin2RGB(uint8_t set)
+{
+    uint32_t temperature = map(set, 0, 255, 2500, 6500);
+
+    uint8_t temp = temperature/100;
+    uint8_t r,g,b;
+
+    if (temp<=66) {
+        r = 255;
+        g = 99.4708025861 * log(temp) - 161.1195681661;
+        if (temp<=19) {
+            b = 0;
+        } else {
+            b = 138.5177312231 * log(temp-10) - 305.0447927307;
+        }
+    } else {
+        if (temp<60) {
+            r = 0;
+            g = 0;
+        } else {
+            r = 329.698727446 * pow(temp-60, -0.1332047592);
+            g = 288.1221695283 * pow(temp-60, -0.0755148492);
+        }
+        b = 255;
+    }
+
+    r = (r > 0) ? r : 0;
+    g = (g > 0) ? g : 0;
+    b = (b > 0) ? b : 0;
+
+    return r << 16 | g << 8 | b;
 }
 
 void setSunlight(uint32_t color)
 {
+    if (color == 0) return;
     sunlight_color = color;
 }
 
-void setStreamer(uint8_t num, uint32_t color)
+void setGradient(uint8_t num, uint32_t color)
 {
     if (num > BLINKER_LAMP_COLOR_B) return;
 
-    stream_color[num] = color;
-    stream_color_standard = color;
+    if (color == 0) return;
+    gradient_color[num] = color;
+    gradient_color_standard = color;
 }
 
-void setStreamer(uint32_t *color)
+void setGradient(uint32_t *color)
 {
-    memcpy(stream_color, color, sizeof(color));
+    memcpy(gradient_color, color, sizeof(color));
 }
 
 void setBrightness(uint8_t bright)
@@ -355,15 +431,83 @@ uint8_t getBrightness()
 
 String getColor()
 {
-    uint32_t _color = strip.getPixelColor(0);
-    uint8_t _color_r = (_color >> 16 & 0xFF);
-    uint8_t _color_g = (_color >>  8 & 0xFF);
-    uint8_t _color_b = (_color       & 0xFF);
+    uint32_t _color = 0;
 
-    String _color_str = "[" + String(_color_r) + "," + \
-            String(_color_g) + "," + \
-            String(_color_b) + "," + \
-            String(getBrightness()) + "]";
+    uint8_t _color_r = 0;
+    uint8_t _color_g = 0;
+    uint8_t _color_b = 0;
+
+    String _color_str = "";
+    
+    switch(lampType) {
+        case BLINKER_LAMP_GRADIENT :
+
+            _color_str = "[";
+
+            for(uint8_t num = 0; num < stream_count; num++)
+            {
+                _color = gradient_color[num];
+
+                _color_r = (_color >> 16 & 0xFF);
+                _color_g = (_color >>  8 & 0xFF);
+                _color_b = (_color       & 0xFF);
+
+                _color_str += "[" + String(_color_r) + "," + \
+                String(_color_g) + "," + \
+                String(_color_b) + "]";
+
+                if (num + 1 < stream_count) _color_str += ",";
+            }
+
+            _color_str += "]";
+            break;
+        case BLINKER_LAMP_STANDARD :
+            _color = standard_color;
+
+            _color_r = (_color >> 16 & 0xFF);
+            _color_g = (_color >>  8 & 0xFF);
+            _color_b = (_color       & 0xFF);
+
+            _color_str = "[" + String(_color_r) + "," + \
+                String(_color_g) + "," + \
+                String(_color_b) + "]";
+            break;
+        case BLINKER_LAMP_BREATH :
+            _color = breath_color;
+
+            _color_r = (_color >> 16 & 0xFF);
+            _color_g = (_color >>  8 & 0xFF);
+            _color_b = (_color       & 0xFF);
+
+            _color_str = "[" + String(_color_r) + "," + \
+                String(_color_g) + "," + \
+                String(_color_b) + "]";
+            break;
+        case BLINKER_LAMP_STROBE :
+            _color = strobe_color;
+
+            _color_r = (_color >> 16 & 0xFF);
+            _color_g = (_color >>  8 & 0xFF);
+            _color_b = (_color       & 0xFF);
+
+            _color_str = "[" + String(_color_r) + "," + \
+                String(_color_g) + "," + \
+                String(_color_b) + "]";
+            break;
+        case BLINKER_LAMP_SUNLIGHT :
+            _color = sunlight_color;
+
+            _color_r = (_color >> 16 & 0xFF);
+            _color_g = (_color >>  8 & 0xFF);
+            _color_b = (_color       & 0xFF);
+
+            _color_str = "[" + String(_color_r) + "," + \
+                String(_color_g) + "," + \
+                String(_color_b) + "]";
+            break;
+        default :
+            break;
+    }
 
     return _color_str;
 }
@@ -376,13 +520,13 @@ void setSpeed(uint8_t speed)
     // if (speed > BLINKER_LAMP_SPEED_MAX)
     //     speed = BLINKER_LAMP_SPEED_MAX;
     
-    lampSpeed = map(speed, 0, 100, BLINKER_LAMP_SPEED_MIN, BLINKER_LAMP_SPEED_MAX);
+    lampSpeed = map(speed, 0, 255, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN);
     _lampSpeed = lampSpeed;
 }
 
 uint8_t getSpeed()
 {
-    return map(lampSpeed, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN, 0, 100);
+    return map(lampSpeed, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN, 0, 255);
 }
 
 void modeChange()
@@ -421,8 +565,8 @@ String getMode()
         case BLINKER_LAMP_RAINBOW :
             return BLINKER_CMD_LAMP_RAINBOW;
             break;
-        case BLINKER_LAMP_STREAMER :
-            return BLINKER_CMD_LAMP_STREAMER;// * 256;
+        case BLINKER_LAMP_GRADIENT :
+            return BLINKER_CMD_LAMP_GRADIENT;// * 256;
             break;
         case BLINKER_LAMP_STANDARD :
             return BLINKER_CMD_LAMP_STANDARD;
@@ -430,8 +574,8 @@ String getMode()
         case BLINKER_LAMP_BREATH :
             return BLINKER_CMD_LAMP_BREATH;// * 256;
             break;
-        case BLINKER_LAMP_RAINBOW_STROBE :
-            return BLINKER_CMD_LAMP_RAINBOW_STROBE;// * 256;
+        case BLINKER_LAMP_STROBE :
+            return BLINKER_CMD_LAMP_STROBE;// * 256;
             break;
         case BLINKER_LAMP_SUNLIGHT :
             return BLINKER_CMD_LAMP_SUNLIGHT;
@@ -460,7 +604,7 @@ void ledRun()
         case BLINKER_LAMP_RAINBOW :
             rainbowDisplay();
             break;
-        case BLINKER_LAMP_STREAMER :
+        case BLINKER_LAMP_GRADIENT :
             _lampSpeed = streamer();// * 256;
             break;
         case BLINKER_LAMP_STANDARD :
@@ -469,8 +613,8 @@ void ledRun()
         case BLINKER_LAMP_BREATH :
             _lampSpeed = breath();// * 256;
             break;
-        case BLINKER_LAMP_RAINBOW_STROBE :
-            _lampSpeed = rainbowStrobe();// * 256;
+        case BLINKER_LAMP_STROBE :
+            _lampSpeed = strobe();// * 256;
             break;
         case BLINKER_LAMP_SUNLIGHT :
             sunlight();
