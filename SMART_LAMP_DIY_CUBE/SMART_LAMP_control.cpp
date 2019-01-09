@@ -48,6 +48,15 @@ static uint32_t stream_color_standard = 0;
 
 static uint32_t standard_color = 0x88ff0088;
 
+static uint32_t latest_color = 0;
+static uint32_t now_color = 0;
+static bool     isGraded = false;
+
+static uint32_t latest_brt = 0;
+static uint32_t now_brt = 0;
+static bool     isBrt = true;
+static uint32_t brtStep = 0;
+
 // static callback_with_uint32_arg_t _lampDelay = NULL;
 
 bool needFresh()
@@ -198,20 +207,24 @@ uint32_t streamer() {
     return _delay;
 }
 
-void standard()
+uint32_t standard()
 {
+    if (!isGraded) return colorGradient();
+
     uint8_t lum = (standard_color >> 24 & 0xFF);
     uint8_t r   = (standard_color >> 16 & 0xFF);// * lum / 256;
     uint8_t g   = (standard_color >>  8 & 0xFF);// * lum / 256;
     uint8_t b   = (standard_color       & 0xFF);// * lum / 256;
 
-    strip.setBrightness(lum);
+    // strip.setBrightness(lum);
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
     }
 
     strip.show();
+
+    return 0;
 }
 
 uint32_t breath()
@@ -295,9 +308,46 @@ void resetDisplay(uint16_t _time)
 //     _lampDelay = newFunc;
 // }
 
+uint32_t colorGradient()
+{
+    int lum = lampStep;
+
+    uint8_t latest_r = (latest_color >> 16 & 0xFF);
+    uint8_t latest_g = (latest_color >>  8 & 0xFF);
+    uint8_t latest_b = (latest_color       & 0xFF);
+
+    uint8_t now_r = (now_color >> 16 & 0xFF);
+    uint8_t now_g = (now_color >>  8 & 0xFF);
+    uint8_t now_b = (now_color       & 0xFF);
+
+    uint8_t r = (latest_r + (now_r - latest_r) * (lum) / 512);
+    uint8_t g = (latest_g + (now_g - latest_g) * (lum) / 512);
+    uint8_t b = (latest_b + (now_b - latest_b) * (lum) / 512);
+
+    uint32_t _delay = lampSpeed / 50;
+
+    for(uint8_t i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
+
+    lampStep += 2;
+    if(lampStep >= 512) 
+    {
+        isGraded = true;
+        lampStep = 0;
+    }
+
+    return _delay;
+}
+
 void setStandard(uint32_t color)
 {
+    latest_color = strip.getPixelColor(0);
     standard_color = color;
+    now_color = color;
+    isGraded = false;
 }
 
 void setStreamer(uint8_t num, uint32_t color)
@@ -315,7 +365,11 @@ void setStreamer(uint32_t *color)
 
 void setBrightness(uint8_t bright)
 {
-    strip.setBrightness(bright);
+    latest_brt = getBrightness();
+    now_brt = bright;
+    isBrt = false;
+    brtStep = 0;
+    // strip.setBrightness(bright);
 }
 
 uint8_t getBrightness()
@@ -392,8 +446,22 @@ void ledInit()
 }
 
 void ledRun()
-{    
+{
     if (!needFresh()) return;
+    
+    if (!isBrt)
+    {
+        uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 256;
+
+        brtStep += 2;
+        if (brtStep == 256) isBrt = true;
+
+        strip.setBrightness(set_brt);
+        strip.show();
+
+        Serial.print("SET BRT: ");
+        Serial.println(set_brt);
+    }
 
     switch(lampType) {
         case BLINKER_LAMP_RAINBOW_CYCLE :
@@ -406,7 +474,7 @@ void ledRun()
             _lampSpeed = streamer();// * 256;
             break;
         case BLINKER_LAMP_STANDARD :
-            standard();
+            _lampSpeed = standard();
             break;
         case BLINKER_LAMP_BREATH :
             _lampSpeed = breath();// * 256;

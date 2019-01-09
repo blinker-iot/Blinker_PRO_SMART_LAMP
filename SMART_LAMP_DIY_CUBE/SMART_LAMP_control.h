@@ -8,6 +8,8 @@
 // void lampDelay(uint32_t ms);
 void resetDisplay(uint16_t _time);
 
+uint32_t colorGradient();
+
 void setStandard(uint32_t color);
 
 void setStreamer(uint8_t num, uint32_t color);

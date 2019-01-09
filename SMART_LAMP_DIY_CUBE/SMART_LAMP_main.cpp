@@ -783,6 +783,7 @@ void rgb1_callback(uint8_t r_value, uint8_t g_value, uint8_t b_value, uint8_t br
     BLINKER_LOG("Rrightness value: ", bright_value);
 
     setStandard(bright_value << 24 | r_value << 16 | g_value << 8 | b_value);
+    setBrightness(bright_value);
 }
 
 /* 
