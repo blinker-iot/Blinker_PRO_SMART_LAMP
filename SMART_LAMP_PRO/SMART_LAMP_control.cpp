@@ -48,9 +48,9 @@ static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t _lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
 
-static uint32_t gradient_color[4] = {0xff0000, 0x00ff00, 0x0000ff, 0xffffff};
+static uint32_t gradient_color[BLINKER_MAX_GRADIENT_COUNT] = {0xff0000, 0x00ff00};
 static uint8_t  stream_num = 0;
-static uint8_t  stream_count = 4;
+static uint8_t  stream_count = 2;
 static uint32_t gradient_color_standard = 0;
 
 static uint32_t standard_color = 0x88ff0088;
@@ -177,7 +177,7 @@ uint32_t colorGradient()
     if(lampStep >= 128) 
     {
         isGraded = true;
-        lampStep = 0;
+        lampStep = 256;
     }
 
     return _delay;
@@ -185,19 +185,19 @@ uint32_t colorGradient()
 
 // uint32_t streamer(uint32_t c) {
 uint32_t streamer() {
-    if (!lamp_state) {
-        uint8_t r   = (gradient_color_standard >> 16 & 0xFF);
-        uint8_t g   = (gradient_color_standard >>  8 & 0xFF);
-        uint8_t b   = (gradient_color_standard       & 0xFF);
+    // if (!lamp_state) {
+    //     uint8_t r   = (gradient_color_standard >> 16 & 0xFF);
+    //     uint8_t g   = (gradient_color_standard >>  8 & 0xFF);
+    //     uint8_t b   = (gradient_color_standard       & 0xFF);
 
-        for(uint8_t i=0; i < strip.numPixels(); i++) {
-            strip.setPixelColor(i, r, g, b);
-        }
+    //     for(uint8_t i=0; i < strip.numPixels(); i++) {
+    //         strip.setPixelColor(i, r, g, b);
+    //     }
 
-        strip.show();
+    //     strip.show();
 
-        return 0;
-    }
+    //     return 0;
+    // }
 
     if (lampStep == 0) stream_num = (stream_num + 1) % stream_count;
 
@@ -334,7 +334,8 @@ uint32_t strobe()
         // c = Wheel(lampStep);
         // c = Wheel(random(0, 255));
         c = strobe_color;
-        _delay = 5000;//lampSpeed * 20;
+        // _delay = 5000;//
+        _delay = lampSpeed * 20;
     }
     else {
         c = 0;
@@ -473,32 +474,40 @@ void setSunlight(uint32_t color)
     latest_color = strip.getPixelColor(0);
     now_color = color;
     isGraded = false;
+    lampStep = 0;
 
     sunlight_color = color;
 }
 
-void setGradient(uint8_t num, uint32_t color)
-{
-    if (num > BLINKER_LAMP_COLOR_B) return;
+// void setGradient(uint8_t num, uint32_t color)
+// {
+//     if (num > BLINKER_LAMP_COLOR_B) return;
 
-    if (color == 0) return;
-    gradient_color[num] = color;
-    gradient_color_standard = color;
-}
+//     if (color == 0) return;
+//     gradient_color[num] = color;
+//     gradient_color_standard = color;
+// }
 
-void setGradient(uint32_t *color)
+void setGradient(uint32_t *color, uint8_t count)
 {
     memcpy(gradient_color, color, sizeof(color));
+    stream_count = count;
 }
 
 void setBrightness(uint8_t bright)
 {
-    strip.setBrightness(bright);
+    // strip.setBrightness(bright);
+
+    latest_brt = getBrightness();
+    now_brt = bright;
+    isBrt = false;
+    brtStep = 0;
+    brtTime = millis();
 }
 
 uint8_t getBrightness()
 {
-    return strip.getBrightness();
+    return now_brt;//strip.getBrightness();
 }
 
 String getColor()
@@ -689,7 +698,11 @@ void ledInit()
 
 void ledRun()
 {
-    lumiBreath();
+    // if (!isBrt)
+    // {
+        lumiBreath();
+    //     return;
+    // }
 
     if (!needFresh()) return;
 

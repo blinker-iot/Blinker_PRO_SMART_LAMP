@@ -20,9 +20,9 @@ uint32_t kelvin2RGB(uint8_t set);
 
 void setSunlight(uint32_t color);
 
-void setGradient(uint8_t num, uint32_t color);
+// void setGradient(uint8_t num, uint32_t color);
 
-void setGradient(uint32_t *color);
+void setGradient(uint32_t *color, uint8_t count);
 
 void setBrightness(uint8_t bright);
 

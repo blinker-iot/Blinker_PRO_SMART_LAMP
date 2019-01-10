@@ -45,6 +45,8 @@
 #define BLINKER_CMD_LAMP_GRADIENT       "grd"
 #define BLINKER_CMD_LAMP_SUNLIGHT       "sun"
 
+#define BLINKER_MAX_GRADIENT_COUNT      6
+
 #define BLINKER_CMD_LAMP_MODE           "mode"
 #define BLINKER_CMD_LAMP_COLOR          "clr"
 #define BLINKER_CMD_LAMP_RUN            "run"
