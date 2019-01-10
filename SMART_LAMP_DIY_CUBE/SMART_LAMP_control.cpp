@@ -50,12 +50,13 @@ static uint32_t standard_color = 0x88ff0088;
 
 static uint32_t latest_color = 0;
 static uint32_t now_color = 0;
-static bool     isGraded = false;
+static bool     isGraded = true;
 
 static uint32_t latest_brt = 0;
 static uint32_t now_brt = 0;
 static bool     isBrt = true;
 static uint32_t brtStep = 0;
+static uint32_t brtTime = 0;
 
 // static callback_with_uint32_arg_t _lampDelay = NULL;
 
@@ -65,7 +66,7 @@ bool needFresh()
 
     if (_lampSpeed < 256) _lampSpeed = 256;
 
-    yield();
+    // yield();
 
     if ((millis() - freshStart) >= (_lampSpeed / 256)) {
         freshStart = millis();
@@ -233,14 +234,14 @@ uint32_t breath()
     if(lum > 255) lum = 511 - lum; // lum = 15 -> 255 -> 15
 
     uint32_t _delay;
-    if(lum == 15) _delay = lampSpeed * 10 / 2;//50; // 970 pause before each breath
-    else if(lum <=  25 && lum > 15)  _delay = lampSpeed * 3.8;// * 2;//38; // 19
-    else if(lum <=  50 && lum > 25)  _delay = lampSpeed * 3.6;// * 2;//36; // 18
-    else if(lum <=  75 && lum > 50)  _delay = lampSpeed * 2.8;// * 2;//28; // 14
-    else if(lum <= 100 && lum > 75)  _delay = lampSpeed * 2 / 2;//20; // 10
-    else if(lum <= 125 && lum > 100) _delay = lampSpeed * 1.4 / 2;//14; // 7
-    else if(lum <= 150 && lum > 125) _delay = lampSpeed * 1.1 / 2;//11; // 5
-    else _delay = lampSpeed * 1 / 2;//10; // 4
+    if(lum == 15) _delay = lampSpeed * 12;//50; // 970 pause before each breath
+    else if(lum <=  25 && lum > 15)  _delay = lampSpeed * 6;// * 2;//38; // 19
+    else if(lum <=  50 && lum > 25)  _delay = lampSpeed * 5;// * 2;//36; // 18
+    else if(lum <=  75 && lum > 50)  _delay = lampSpeed * 4;// * 2;//28; // 14
+    else if(lum <= 100 && lum > 75)  _delay = lampSpeed * 3;//20; // 10
+    else if(lum <= 125 && lum > 100) _delay = lampSpeed * 2;//14; // 7
+    else if(lum <= 150 && lum > 125) _delay = lampSpeed * 1.5;//11; // 5
+    else _delay = lampSpeed * 1;//10; // 4
 
     // uint32_t color = SEGMENT.colors[0];
     // uint8_t w = (standard_color >> 24 & 0xFF) * lum / 256;
@@ -320,11 +321,11 @@ uint32_t colorGradient()
     uint8_t now_g = (now_color >>  8 & 0xFF);
     uint8_t now_b = (now_color       & 0xFF);
 
-    uint8_t r = (latest_r + (now_r - latest_r) * (lum) / 512);
-    uint8_t g = (latest_g + (now_g - latest_g) * (lum) / 512);
-    uint8_t b = (latest_b + (now_b - latest_b) * (lum) / 512);
+    uint8_t r = (latest_r + (now_r - latest_r) * (lum) / 128);
+    uint8_t g = (latest_g + (now_g - latest_g) * (lum) / 128);
+    uint8_t b = (latest_b + (now_b - latest_b) * (lum) / 128);
 
-    uint32_t _delay = lampSpeed / 50;
+    uint32_t _delay = 128;
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -333,7 +334,7 @@ uint32_t colorGradient()
     strip.show();
 
     lampStep += 2;
-    if(lampStep >= 512) 
+    if(lampStep >= 128) 
     {
         isGraded = true;
         lampStep = 0;
@@ -369,6 +370,7 @@ void setBrightness(uint8_t bright)
     now_brt = bright;
     isBrt = false;
     brtStep = 0;
+    brtTime = millis();
     // strip.setBrightness(bright);
 }
 
@@ -436,6 +438,28 @@ void setLampMode(uint8_t lamp_mode, bool state)
     lamp_state = state;
 }
 
+void lumiBreath()
+{
+    if (!isBrt)
+    {
+        if (millis() - brtTime > 2)
+        {
+            brtTime = millis();
+            
+            uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 128;
+
+            brtStep += 2;
+            if (brtStep >= 128) isBrt = true;
+
+            strip.setBrightness(set_brt);
+            strip.show();
+
+            // Serial.print("SET BRT: ");
+            // Serial.println(set_brt);
+        }
+    }
+}
+
 void ledInit()
 {
     strip.begin();
@@ -447,21 +471,9 @@ void ledInit()
 
 void ledRun()
 {
+    lumiBreath();
+
     if (!needFresh()) return;
-    
-    if (!isBrt)
-    {
-        uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 256;
-
-        brtStep += 2;
-        if (brtStep == 256) isBrt = true;
-
-        strip.setBrightness(set_brt);
-        strip.show();
-
-        Serial.print("SET BRT: ");
-        Serial.println(set_brt);
-    }
 
     switch(lampType) {
         case BLINKER_LAMP_RAINBOW_CYCLE :
