@@ -230,6 +230,8 @@ uint32_t standard()
 
 uint32_t breath()
 {
+    if (!isGraded) return colorGradient();
+
     int lum = lampStep;
     if(lum > 255) lum = 511 - lum; // lum = 15 -> 255 -> 15
 
@@ -337,7 +339,7 @@ uint32_t colorGradient()
     if(lampStep >= 128) 
     {
         isGraded = true;
-        lampStep = 0;
+        lampStep = 256;
     }
 
     return _delay;
@@ -346,9 +348,11 @@ uint32_t colorGradient()
 void setStandard(uint32_t color)
 {
     latest_color = strip.getPixelColor(0);
-    standard_color = color;
     now_color = color;
     isGraded = false;
+    lampStep = 0;
+
+    standard_color = color;
 }
 
 void setStreamer(uint8_t num, uint32_t color)

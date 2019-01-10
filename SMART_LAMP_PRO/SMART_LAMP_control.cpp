@@ -58,6 +58,16 @@ static uint32_t sunlight_color = BLINKER_COLOR_TEMP_MIN;
 static uint32_t breath_color = 0xffffdbba;
 static uint32_t strobe_color = 0x88ff0088;
 
+static uint32_t latest_color = 0;
+static uint32_t now_color = 0;
+static bool     isGraded = true;
+
+static uint32_t latest_brt = 0;
+static uint32_t now_brt = 0;
+static bool     isBrt = true;
+static uint32_t brtStep = 0;
+static uint32_t brtTime = 0;
+
 static bool     old_ec0;
 static bool     old_ec1;
 static bool     now_ec0;
@@ -139,6 +149,40 @@ void rainbowCycleDisplay() {
     // lampFresh(lampSpeed);
 }
 
+uint32_t colorGradient()
+{
+    int lum = lampStep;
+
+    uint8_t latest_r = (latest_color >> 16 & 0xFF);
+    uint8_t latest_g = (latest_color >>  8 & 0xFF);
+    uint8_t latest_b = (latest_color       & 0xFF);
+
+    uint8_t now_r = (now_color >> 16 & 0xFF);
+    uint8_t now_g = (now_color >>  8 & 0xFF);
+    uint8_t now_b = (now_color       & 0xFF);
+
+    uint8_t r = (latest_r + (now_r - latest_r) * (lum) / 128);
+    uint8_t g = (latest_g + (now_g - latest_g) * (lum) / 128);
+    uint8_t b = (latest_b + (now_b - latest_b) * (lum) / 128);
+
+    uint32_t _delay = 128;
+
+    for(uint8_t i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, r, g, b);
+    }
+
+    strip.show();
+
+    lampStep += 2;
+    if(lampStep >= 128) 
+    {
+        isGraded = true;
+        lampStep = 0;
+    }
+
+    return _delay;
+}
+
 // uint32_t streamer(uint32_t c) {
 uint32_t streamer() {
     if (!lamp_state) {
@@ -212,8 +256,10 @@ uint32_t streamer() {
     return _delay;
 }
 
-void standard()
+uint32_t standard()
 {
+    if (!isGraded) return colorGradient();
+
     uint8_t lum = (standard_color >> 24 & 0xFF);
     uint8_t r   = (standard_color >> 16 & 0xFF);
     uint8_t g   = (standard_color >>  8 & 0xFF);
@@ -224,10 +270,14 @@ void standard()
     }
 
     strip.show();
+
+    return 0;
 }
 
-void sunlight()
+uint32_t sunlight()
 {
+    if (!isGraded) return colorGradient();
+
     uint8_t lum = (sunlight_color >> 24 & 0xFF);
     uint8_t r   = (sunlight_color >> 16 & 0xFF);
     uint8_t g   = (sunlight_color >>  8 & 0xFF);
@@ -238,10 +288,14 @@ void sunlight()
     }
 
     strip.show();
+
+    return 0;
 }
 
 uint32_t breath()
 {
+    if (!isGraded) return colorGradient();
+
     int lum = lampStep;
     if(lum > 255) lum = 511 - lum; // lum = 15 -> 255 -> 15
 
@@ -351,18 +405,31 @@ void setColor(uint32_t color)
 void setStandard(uint32_t color)
 {
     if (color == 0) return;
+
+    latest_color = strip.getPixelColor(0);
+    now_color = color;
+    isGraded = false;
+    lampStep = 0;
+
     standard_color = color;
 }
 
 void setBreath(uint32_t color)
 {
     if (color == 0) return;
+
+    latest_color = strip.getPixelColor(0);
+    now_color = color;
+    isGraded = false;
+    lampStep = 0;
+
     breath_color = color;
 }
 
 void setStrobe(uint32_t color)
 {
     if (color == 0) return;
+
     strobe_color = color;
 }
 
@@ -402,6 +469,11 @@ uint32_t kelvin2RGB(uint8_t set)
 void setSunlight(uint32_t color)
 {
     if (color == 0) return;
+
+    latest_color = strip.getPixelColor(0);
+    now_color = color;
+    isGraded = false;
+
     sunlight_color = color;
 }
 
@@ -586,6 +658,28 @@ String getMode()
     }
 }
 
+void lumiBreath()
+{
+    if (!isBrt)
+    {
+        if (millis() - brtTime > 2)
+        {
+            brtTime = millis();
+            
+            uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 128;
+
+            brtStep += 2;
+            if (brtStep >= 128) isBrt = true;
+
+            strip.setBrightness(set_brt);
+            strip.show();
+
+            // Serial.print("SET BRT: ");
+            // Serial.println(set_brt);
+        }
+    }
+}
+
 void ledInit()
 {
     strip.begin();
@@ -594,7 +688,9 @@ void ledInit()
 }
 
 void ledRun()
-{    
+{
+    lumiBreath();
+
     if (!needFresh()) return;
 
     switch(lampType) {
@@ -608,7 +704,7 @@ void ledRun()
             _lampSpeed = streamer();// * 256;
             break;
         case BLINKER_LAMP_STANDARD :
-            standard();
+            _lampSpeed = standard();
             break;
         case BLINKER_LAMP_BREATH :
             _lampSpeed = breath();// * 256;
@@ -617,7 +713,7 @@ void ledRun()
             _lampSpeed = strobe();// * 256;
             break;
         case BLINKER_LAMP_SUNLIGHT :
-            sunlight();
+            _lampSpeed = sunlight();
             break;
         default :
             break;
