@@ -67,6 +67,7 @@ static uint32_t now_brt = 0;
 static bool     isBrt = true;
 static uint32_t brtStep = 0;
 static uint32_t brtTime = 0;
+static uint8_t  brtLumi = 255;
 
 static bool     old_ec0;
 static bool     old_ec1;
@@ -174,7 +175,7 @@ uint32_t colorGradient()
     strip.show();
 
     lampStep += 2;
-    if(lampStep >= 128) 
+    if(lampStep > 128) 
     {
         isGraded = true;
         lampStep = 256;
@@ -311,17 +312,17 @@ uint32_t breath()
 
     // uint32_t color = SEGMENT.colors[0];
     // uint8_t w = (breath_color >> 24 & 0xFF) * lum / 256;
-    uint8_t r = (breath_color >> 16 & 0xFF) * lum / 256;
-    uint8_t g = (breath_color >>  8 & 0xFF) * lum / 256;
-    uint8_t b = (breath_color       & 0xFF) * lum / 256;
+    uint8_t r = (breath_color >> 16 & 0xFF);// * lum / 256;
+    uint8_t g = (breath_color >>  8 & 0xFF);// * lum / 256;
+    uint8_t b = (breath_color       & 0xFF);// * lum / 256;
     for(uint16_t i = 0; i <= strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
     }
-
+    strip.setBrightness(brtLumi * lum / 256);
     strip.show();
 
     lampStep += 2;
-    if(lampStep > (512 - 50)) lampStep = 50;
+    if(lampStep > (512 - 10)) lampStep = 10;
 
     return _delay;
 }
@@ -490,7 +491,11 @@ void setSunlight(uint32_t color)
 
 void setGradient(uint32_t *color, uint8_t count)
 {
-    memcpy(gradient_color, color, sizeof(color));
+    // memcpy(gradient_color, color, sizeof(color));
+    for(uint8_t num = 0; num < count; num++)
+    {
+        gradient_color[num] = color[num];
+    }
     stream_count = count;
 }
 
@@ -503,6 +508,11 @@ void setBrightness(uint8_t bright)
     isBrt = false;
     brtStep = 0;
     brtTime = millis();
+
+    if (lampType == BLINKER_LAMP_BREATH)
+    {
+        brtLumi = bright;
+    }
 }
 
 uint8_t getBrightness()
