@@ -678,7 +678,7 @@ void lumiBreath()
             uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 128;
 
             brtStep += 2;
-            if (brtStep >= 128) isBrt = true;
+            if (brtStep > 128) isBrt = true;
 
             strip.setBrightness(set_brt);
             strip.show();
