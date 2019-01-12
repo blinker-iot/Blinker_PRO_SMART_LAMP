@@ -16,7 +16,7 @@
 #define BLINKER_BUTTON
 #define BLINKER_BUTTON_PULLDOWN
 #define BLINKER_BUTTON_LONGPRESS_POWERDOWN
-#define BLINKER_BUTTON_PIN 15
+#define BLINKER_BUTTON_PIN 12
 
 #include <Blinker.h>
 
@@ -368,7 +368,7 @@ void longPressPowerdown()
 {
     BLINKER_LOG("Button long press powerdown!");
 
-    // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+    digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
 
 /* 
@@ -433,10 +433,10 @@ void longPressReset()
 
 void hardwareInit()
 {
-    // pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
-    // digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
-    // pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
-    // digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
+    pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
+    digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
+    pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
+    digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
     // touchInit();
 
