@@ -28,9 +28,13 @@ void setBrightness(uint8_t bright);
 
 uint8_t getBrightness();
 
+uint32_t getPixelColor();
+
 String getColor();
 
 String getMode();
+
+uint8_t getModeType();
 
 void setSpeed(uint8_t speed);
 

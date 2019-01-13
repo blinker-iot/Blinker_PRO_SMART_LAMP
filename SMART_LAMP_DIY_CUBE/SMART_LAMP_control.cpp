@@ -37,8 +37,8 @@ static bool     change = false;
 static bool     lamp_state = true;
 static uint8_t  lampType = BLINKER_LAMP_RAINBOW_CYCLE;
 static uint32_t lampStep = 0;
-static uint32_t lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
-static uint32_t _lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
+static uint32_t lampSpeed = 100;//BLINKER_LAMP_SPEED_DEFUALT;
+static uint32_t _lampSpeed = 100;//BLINKER_LAMP_SPEED_DEFUALT;
 static uint32_t freshStart = 0;
 
 static uint32_t stream_color[4] = {0xff0000, 0x00ff00, 0x0000ff, 0xffffff};
@@ -64,11 +64,13 @@ bool needFresh()
 {
     // strip.show();
 
-    if (_lampSpeed < 256) _lampSpeed = 256;
+    // if (_lampSpeed < 256) _lampSpeed = 256;
+
+    if (_lampSpeed < 1) _lampSpeed = 1;
 
     // yield();
 
-    if ((millis() - freshStart) >= (_lampSpeed / 256)) {
+    if ((millis() - freshStart) >= _lampSpeed) {
         freshStart = millis();
         return true;
     }
@@ -129,7 +131,7 @@ void rainbowCycleDisplay() {
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + lampStep) & 255));
     }
-    lampStep = (lampStep + getSpeed()/25) & 0xFF;
+    lampStep = (lampStep + 1) & 0xFF;//(lampStep + getSpeed()/25) & 0xFF;
 
     strip.show();
     // lampFresh(lampSpeed);
@@ -194,7 +196,7 @@ uint32_t streamer() {
 
     uint32_t _delay = lampSpeed * 2 / 5;
 
-    if (lum < start_lum || lum > end_lum) _delay = lampSpeed * 8 / 5;
+    if (lum < start_lum || lum > end_lum) _delay = lampSpeed;// * 8 / 5;
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -236,14 +238,14 @@ uint32_t breath()
     if(lum > 255) lum = 511 - lum; // lum = 15 -> 255 -> 15
 
     uint32_t _delay;
-    if(lum == 15) _delay = lampSpeed * 12;//50; // 970 pause before each breath
-    else if(lum <=  25 && lum > 15)  _delay = lampSpeed * 6;// * 2;//38; // 19
-    else if(lum <=  50 && lum > 25)  _delay = lampSpeed * 5;// * 2;//36; // 18
-    else if(lum <=  75 && lum > 50)  _delay = lampSpeed * 4;// * 2;//28; // 14
-    else if(lum <= 100 && lum > 75)  _delay = lampSpeed * 3;//20; // 10
-    else if(lum <= 125 && lum > 100) _delay = lampSpeed * 2;//14; // 7
-    else if(lum <= 150 && lum > 125) _delay = lampSpeed * 1.5;//11; // 5
-    else _delay = lampSpeed * 1;//10; // 4
+    if(lum == 15) _delay = lampSpeed * 12 / 10;//50; // 970 pause before each breath
+    else if(lum <=  25 && lum > 15)  _delay = lampSpeed * 6 / 10;// * 2;//38; // 19
+    else if(lum <=  50 && lum > 25)  _delay = lampSpeed * 5 / 10;// * 2;//36; // 18
+    else if(lum <=  75 && lum > 50)  _delay = lampSpeed * 4 / 10;// * 2;//28; // 14
+    else if(lum <= 100 && lum > 75)  _delay = lampSpeed * 3 / 10;//20; // 10
+    else if(lum <= 125 && lum > 100) _delay = lampSpeed * 2 / 10;//14; // 7
+    else if(lum <= 150 && lum > 125) _delay = lampSpeed * 1.5 / 10;//11; // 5
+    else _delay = lampSpeed * 1 / 10;//10; // 4
 
     // uint32_t color = SEGMENT.colors[0];
     // uint8_t w = (standard_color >> 24 & 0xFF) * lum / 256;
@@ -269,11 +271,11 @@ uint32_t rainbowStrobe()
     if (lampStep % 2) {
         // c = Wheel(lampStep);
         c = Wheel(random(0, 255));
-        _delay = 5000;
+        _delay = lampSpeed;//5000;
     }
     else {
         c = 0;
-        _delay = lampSpeed * 20;//1000;
+        _delay = lampSpeed;// * 20;//1000;
     }
 
     if (lampStep == 255) lampStep = 0;
@@ -336,7 +338,7 @@ uint32_t colorGradient()
     strip.show();
 
     lampStep += 2;
-    if(lampStep >= 128) 
+    if(lampStep > 128) 
     {
         isGraded = true;
         lampStep = 256;
@@ -390,18 +392,19 @@ uint32_t getPixelColor()
 
 uint8_t getSpeed()
 {
-    return map(lampSpeed, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN, 0, 128);
+    return 255 - lampSpeed;//map(lampSpeed, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN, 0, 255);
 }
 
 void setSpeed(uint8_t speed)
 {
+    lampSpeed = 255 - speed;
     // speed = speed * 256;
     // if (speed < BLINKER_LAMP_SPEED_MIN)
     //     speed = BLINKER_LAMP_SPEED_MIN;
     // if (speed > BLINKER_LAMP_SPEED_MAX)
     //     speed = BLINKER_LAMP_SPEED_MAX;
     
-    lampSpeed = map(speed, 0, 128, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN);
+    // lampSpeed = map(speed, 0, 255, BLINKER_LAMP_SPEED_MAX, BLINKER_LAMP_SPEED_MIN);
     _lampSpeed = lampSpeed;
 }
 
@@ -419,7 +422,7 @@ void modeChange()
 {
     lampType = (lampType + 1) % BLINKER_LAMP_TYPE_COUNT;
     lampStep = 0;
-    lampSpeed = BLINKER_LAMP_SPEED_DEFUALT;
+    lampSpeed = 255;//BLINKER_LAMP_SPEED_DEFUALT;
     _lampSpeed = lampSpeed;
 
     Serial.println(lampType);
@@ -453,7 +456,7 @@ void lumiBreath()
             uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 128;
 
             brtStep += 2;
-            if (brtStep >= 128) isBrt = true;
+            if (brtStep > 128) isBrt = true;
 
             strip.setBrightness(set_brt);
             strip.show();
