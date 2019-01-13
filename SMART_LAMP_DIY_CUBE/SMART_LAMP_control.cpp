@@ -329,7 +329,7 @@ uint32_t colorGradient()
     uint8_t g = (latest_g + (now_g - latest_g) * (lum) / 128);
     uint8_t b = (latest_b + (now_b - latest_b) * (lum) / 128);
 
-    uint32_t _delay = 128;
+    uint32_t _delay = 64;
 
     for(uint8_t i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
@@ -449,7 +449,7 @@ void lumiBreath()
 {
     if (!isBrt)
     {
-        if (millis() - brtTime > 2)
+        if (millis() - brtTime > 1)
         {
             brtTime = millis();
             
@@ -480,7 +480,11 @@ void ledRun()
 {
     lumiBreath();
 
-    if (!needFresh()) return;
+    if (!needFresh()) 
+    {
+        strip.show();
+        return;
+    }
 
     switch(lampType) {
         case BLINKER_LAMP_RAINBOW_CYCLE :
