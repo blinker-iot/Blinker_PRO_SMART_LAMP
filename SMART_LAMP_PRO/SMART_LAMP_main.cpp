@@ -562,7 +562,7 @@ void aligenieQuery(int32_t queryCode)
     {
         case BLINKER_CMD_QUERY_ALL_NUMBER :
             BLINKER_LOG("AliGenie Query All");
-            BlinkerAliGenie.powerState(lamp_bright ? "on" : "off");
+            BlinkerAliGenie.powerState(getBrightness() ? "on" : "off");
             BlinkerAliGenie.color(getAliColor());
             BlinkerAliGenie.mode(getLampMode());
             BlinkerAliGenie.colorTemp(50);
@@ -571,7 +571,7 @@ void aligenieQuery(int32_t queryCode)
             break;
         case BLINKER_CMD_QUERY_POWERSTATE_NUMBER :
             BLINKER_LOG("AliGenie Query Power State");
-            BlinkerAliGenie.powerState(lamp_bright ? "on" : "off");
+            BlinkerAliGenie.powerState(getBrightness() ? "on" : "off");
             BlinkerAliGenie.print();
             break;
         case BLINKER_CMD_QUERY_COLOR_NUMBER :
@@ -595,7 +595,7 @@ void aligenieQuery(int32_t queryCode)
             BlinkerAliGenie.print();
             break;
         default :
-            BlinkerAliGenie.powerState(lamp_bright ? "on" : "off");
+            BlinkerAliGenie.powerState(getBrightness() ? "on" : "off");
             BlinkerAliGenie.color(getAliColor());
             BlinkerAliGenie.mode(getLampMode());
             BlinkerAliGenie.colorTemp(50);
@@ -1003,7 +1003,25 @@ void LAMP_init()
     Blinker.attachLongPressReset(longPressReset);
 
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
-#endif
+#endif    
+
+    BlinkerAliGenie.attachPowerState(aligeniePowerSate);
+    BlinkerAliGenie.attachColor(aligenieColor);
+    BlinkerAliGenie.attachMode(aligenieMode);
+    BlinkerAliGenie.attachCancelMode(aligeniecMode);
+    BlinkerAliGenie.attachBrightness(aligenieBright);
+    BlinkerAliGenie.attachRelativeBrightness(aligenieRelativeBright);
+    BlinkerAliGenie.attachColorTemperature(aligenieColoTemp);
+    BlinkerAliGenie.attachRelativeColorTemperature(aligenieRelativeColoTemp);
+    BlinkerAliGenie.attachQuery(aligenieQuery);
+
+    BlinkerDuerOS.attachPowerState(duerPowerState);
+    BlinkerDuerOS.attachColor(duerColor);
+    BlinkerDuerOS.attachMode(duerMode);
+    BlinkerDuerOS.attachCancelMode(duercMode);
+    BlinkerDuerOS.attachBrightness(duerBright);
+    BlinkerDuerOS.attachRelativeBrightness(duerRelativeBright);
+    BlinkerDuerOS.attachQuery(duerQuery);
 
     // attachDelay(delays);
 }
