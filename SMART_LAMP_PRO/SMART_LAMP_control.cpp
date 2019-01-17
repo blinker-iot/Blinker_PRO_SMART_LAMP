@@ -338,11 +338,11 @@ uint32_t strobe()
         // c = Wheel(random(0, 255));
         c = strobe_color;
         // _delay = 5000;//
-        _delay = lampSpeed;// * 20;
+        _delay = lampSpeed * 20;
     }
     else {
         c = 0;
-        _delay = lampSpeed;// * 20;//1000;
+        _delay = lampSpeed * 20;//1000;
     }
 
     if (lampStep == 255) lampStep = 0;
