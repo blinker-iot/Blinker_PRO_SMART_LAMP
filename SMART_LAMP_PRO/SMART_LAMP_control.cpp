@@ -303,9 +303,9 @@ uint32_t breath()
     if(lum > 255) lum = 511 - lum; // lum = 15 -> 255 -> 15
 
     uint32_t _delay;
-    if(lum == 15) _delay = lampSpeed * 12 / 10;//50; // 970 pause before each breath
+    if(lum == 15) _delay = lampSpeed * 6 / 10;//50; // 970 pause before each breath
     else if(lum <=  25 && lum > 15)  _delay = lampSpeed * 6 / 10;// * 2;//38; // 19
-    else if(lum <=  50 && lum > 25)  _delay = lampSpeed * 5 / 10;// * 2;//36; // 18
+    else if(lum <=  50 && lum > 25)  _delay = lampSpeed * 6 / 10;// * 2;//36; // 18
     else if(lum <=  75 && lum > 50)  _delay = lampSpeed * 4 / 10;// * 2;//28; // 14
     else if(lum <= 100 && lum > 75)  _delay = lampSpeed * 3 / 10;//20; // 10
     else if(lum <= 125 && lum > 100) _delay = lampSpeed * 2 / 10;//14; // 7
@@ -320,12 +320,11 @@ uint32_t breath()
     for(uint16_t i = 0; i <= strip.numPixels(); i++) {
         strip.setPixelColor(i, r, g, b);
     }
-
-    strip.setBrightness(brtLumi * lum / 256);
     strip.show();
+    strip.setBrightness(brtLumi * lum / 256);
 
-    lampStep += 2;
-    if(lampStep > (512 - 20)) lampStep = 20;
+    lampStep += 1;
+    if(lampStep > (512 - 40)) lampStep = 40;
 
     return _delay;
 }
@@ -514,6 +513,7 @@ void setBrightness(uint8_t bright)
 
     if (lampType == BLINKER_LAMP_BREATH)
     {
+        latest_brt = strip.getBrightness();
         brtLumi = bright;
     }
 }
@@ -695,13 +695,13 @@ void lumiBreath()
 {
     if (!isBrt)
     {
-        if (millis() - brtTime > 1)
+        if (millis() - brtTime >= 1)
         {
             brtTime = millis();
             
             uint8_t set_brt = latest_brt + (now_brt - latest_brt) * brtStep / 128;
 
-            brtStep += 2;
+            brtStep += 4;
             if (brtStep > 128) isBrt = true;
 
             strip.setBrightness(set_brt);
@@ -730,7 +730,7 @@ void ledRun()
 
     if (!needFresh()) 
     {
-        strip.show();
+        // strip.show();
         return;
     }
 
