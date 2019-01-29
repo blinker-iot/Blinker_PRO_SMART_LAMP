@@ -504,6 +504,8 @@ void aligeniecMode(const String & cmode)
 
 void aligenieBright(const String & bright)
 {
+    colorW = getBrightness();
+
     BLINKER_LOG("need set brightness: ", bright);
 
     if (bright == BLINKER_CMD_MAX) {
@@ -526,6 +528,8 @@ void aligenieBright(const String & bright)
 
 void aligenieRelativeBright(int32_t bright)
 {
+    colorW = getBrightness();
+
     BLINKER_LOG("need set relative brightness: ", bright);
 
     if (colorW + bright < 255 && colorW + bright >= 0) {
@@ -534,9 +538,9 @@ void aligenieRelativeBright(int32_t bright)
 
     BLINKER_LOG("now set brightness: ", colorW);
 
-    setBrightness(getBrightness() + colorW);
+    setBrightness(colorW);
 
-    BlinkerAliGenie.brightness(getBrightness());
+    BlinkerAliGenie.brightness(colorW);
     BlinkerAliGenie.print();
 }
 
@@ -552,7 +556,7 @@ void aligenieRelativeColoTemp(int32_t colorTemp)
 {
     BLINKER_LOG("need set relative colorTemperature: ", colorTemp);
 
-    setSunlight(getTempSet() + colorTemp/abs(colorTemp));
+    setSunlight(getTempSet() + colorTemp/abs(colorTemp) * 10);
 
     BlinkerAliGenie.colorTemp(getColorTemp());
     BlinkerAliGenie.print();
