@@ -584,7 +584,7 @@ uint8_t getBrightness()
 
 uint32_t getPixelColor()
 {
-    return 0;//strip.getPixelColor(0);
+    return 0xFFFFFF;//strip.getPixelColor(0);
 }
 
 // String getColor()
@@ -779,7 +779,7 @@ void ledInit()
 {
     // strip.begin();
     // strip.show();
-    sunlight(128);
+    setSunlight(128);
     setBrightness(0);
 }
 

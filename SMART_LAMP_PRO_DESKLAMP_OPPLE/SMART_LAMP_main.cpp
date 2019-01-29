@@ -534,9 +534,9 @@ void aligenieRelativeBright(int32_t bright)
 
     BLINKER_LOG("now set brightness: ", colorW);
 
-    setBrightness(colorW);
+    setBrightness(getBrightness() + colorW);
 
-    BlinkerAliGenie.brightness(bright);
+    BlinkerAliGenie.brightness(getBrightness());
     BlinkerAliGenie.print();
 }
 
