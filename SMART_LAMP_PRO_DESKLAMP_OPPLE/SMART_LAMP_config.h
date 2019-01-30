@@ -26,6 +26,10 @@
 #define BLINKER_LAMP_WHITE_LED_PIN      12
 #define BLINKER_LAMP_YELLOW_LED_PIN     14
 
+#define BLINKER_LAMP_NIGHT_PWM_PIN      2
+#define BLINKER_LAMP_WHITE_PWM_PIN      4
+#define BLINKER_LAMP_YELLOW_PWM_PIN     5
+
 #define BLINKER_LAMP_COLOR_R            0
 #define BLINKER_LAMP_COLOR_G            1
 #define BLINKER_LAMP_COLOR_B            2

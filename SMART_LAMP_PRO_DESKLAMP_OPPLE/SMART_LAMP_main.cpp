@@ -995,6 +995,10 @@ void hardwareInit()
     pinMode(BLINKER_LAMP_NIGHT_LED_PIN, OUTPUT);
     pinMode(BLINKER_LAMP_WHITE_LED_PIN, OUTPUT);
     pinMode(BLINKER_LAMP_YELLOW_LED_PIN, OUTPUT);
+
+    pinMode(BLINKER_LAMP_NIGHT_PWM_PIN, INPUT);
+    pinMode(BLINKER_LAMP_WHITE_PWM_PIN, INPUT);
+    pinMode(BLINKER_LAMP_YELLOW_PWM_PIN, INPUT);
 }
 
 void LAMP_init()
@@ -1043,6 +1047,11 @@ void LAMP_init()
     // attachDelay(delays);
 }
 
+uint32_t now_time = 0;
+
+uint32_t high_in = 0;
+uint32_t low_in = 0;
+
 void LAMP_run()
 {
     Blinker.run();
@@ -1052,6 +1061,22 @@ void LAMP_run()
     }
     else {
         ledRun();
+    }
+
+    // if (millis() - now_time >= 10000)
+    // {
+    //     now_time = millis();
+
+    //     BLINKER_LOG("NIGHT: ", pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, HIGH));
+    //     BLINKER_LOG("NIGHT: ", pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, LOW));
+    // }
+
+    high_in = pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, HIGH);
+    low_in = pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, LOW);
+
+    if (high_in)
+    {
+        BLINKER_LOG("NIGHT: ", high_in, ",", low_in);
     }
 
     // touchTick();
