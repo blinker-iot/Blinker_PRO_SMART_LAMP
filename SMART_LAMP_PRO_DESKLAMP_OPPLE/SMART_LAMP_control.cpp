@@ -90,9 +90,17 @@ void setLampBright(uint8_t bright)
 
 void lampShow()
 {
-    analogWrite(BLINKER_LAMP_NIGHT_LED_PIN, night_led * bright_set / 255);
-    analogWrite(BLINKER_LAMP_WHITE_LED_PIN, white_led * bright_set / 255);
-    analogWrite(BLINKER_LAMP_YELLOW_LED_PIN, yellow_led * bright_set / 255);
+    uint8_t n_led = night_led * bright_set / 255;
+    uint8_t w_led = white_led * bright_set / 255;
+    uint8_t y_led = yellow_led * bright_set / 255;
+
+    if (n_led < 25) n_led = 0;
+    if (w_led < 25) w_led = 0;
+    if (y_led < 25) y_led = 0;
+
+    analogWrite(BLINKER_LAMP_NIGHT_LED_PIN, n_led);
+    analogWrite(BLINKER_LAMP_WHITE_LED_PIN, w_led);
+    analogWrite(BLINKER_LAMP_YELLOW_LED_PIN, y_led);
 }
 
 void lampColor(uint32_t _c)
@@ -200,7 +208,7 @@ uint32_t colorGradient()
     uint8_t w = (latest_w + (now_w - latest_w) * (lum) / 256);
     uint8_t y = (latest_y + (now_y - latest_y) * (lum) / 256);
 
-    uint32_t _delay = 2;
+    uint32_t _delay = 1;
 
     // for(uint8_t i=0; i < strip.numPixels(); i++) {
     //     strip.setPixelColor(i, r, g, b);
@@ -212,7 +220,7 @@ uint32_t colorGradient()
 
     lampShow();
 
-    lampStep += 1;
+    lampStep += 4;
     if(lampStep > 256) 
     {
         isGraded = true;
@@ -791,11 +799,11 @@ void ledRun()
     //     return;
     // }
 
-    if (!needFresh()) 
-    {
-        // strip.show();
-        return;
-    }
+    // if (!needFresh()) 
+    // {
+    //     // strip.show();
+    //     return;
+    // }
 
     _lampSpeed = sunlight();
 
