@@ -1,5 +1,5 @@
 /* 
- * BLINKER_PRO is use for professional device
+ * BLINKER_PRO_ESP is use for professional device
  * 
  * Please make sure you have permission to modify professional device!
  * Please read usermanual first! Thanks!
@@ -10,7 +10,7 @@
  */
 
 #define BLINKER_PRINT Serial
-#define BLINKER_PRO
+#define BLINKER_PRO_ESP
 #define BLINKER_DEBUG_ALL
 
 #define BLINKER_NO_BUTTON
@@ -22,6 +22,9 @@
 #include <Blinker.h>
 
 #include "SMART_LAMP_control.h"
+
+char type[] = "Your Device Type";
+char auth[] = "Your Device Secret Key";
 
 static bool inited = false;
 static bool isLongPress = false;
@@ -1006,7 +1009,7 @@ void LAMP_init()
     hardwareInit();
     ledInit();
     
-    Blinker.begin(BLINKER_SMART_LAMP);
+    Blinker.begin(auth, type);
 
     Blinker.attachParse(dataParse);
     Blinker.attachHeartbeat(heartbeat);

@@ -1,5 +1,5 @@
 /* 
- * BLINKER_PRO is use for professional device
+ * BLINKER_PRO_ESP is use for professional device
  * 
  * Please make sure you have permission to modify professional device!
  * Please read usermanual first! Thanks!
@@ -10,7 +10,7 @@
  */
 
 #define BLINKER_PRINT Serial
-#define BLINKER_PRO
+#define BLINKER_PRO_ESP
 #define BLINKER_DEBUG_ALL
 
 #define BLINKER_BUTTON
@@ -21,6 +21,9 @@
 #include <Blinker.h>
 
 #include "SMART_LAMP_control.h"
+
+char type[] = "Your Device Type";
+char auth[] = "Your Device Secret Key";
 
 static bool inited = false;
 static bool isLongPress = false;
@@ -1011,7 +1014,7 @@ void LAMP_init()
     hardwareInit();
     ledInit();
     
-    Blinker.begin(BLINKER_SMART_LAMP);
+    Blinker.begin(auth, type);
 
     Blinker.attachParse(dataParse);
     Blinker.attachHeartbeat(heartbeat);
@@ -1049,8 +1052,14 @@ void LAMP_init()
 
 uint32_t now_time = 0;
 
-uint32_t high_in = 0;
-uint32_t low_in = 0;
+uint32_t night_h = 0;
+uint32_t night_l = 0;
+
+uint32_t white_h = 0;
+uint32_t white_l = 0;
+
+uint32_t yellow_h = 0;
+uint32_t yellow_l = 0;
 
 void LAMP_run()
 {
@@ -1071,14 +1080,55 @@ void LAMP_run()
     //     BLINKER_LOG("NIGHT: ", pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, LOW));
     // }
 
-    high_in = pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, HIGH);
-    low_in = pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, LOW);
+    night_h = pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, HIGH);
+    night_l = pulseIn(BLINKER_LAMP_NIGHT_PWM_PIN, LOW);
 
-    if (high_in)
+    white_h = pulseIn(BLINKER_LAMP_WHITE_PWM_PIN, HIGH);
+    white_l = pulseIn(BLINKER_LAMP_WHITE_PWM_PIN, LOW);
+
+    yellow_h = pulseIn(BLINKER_LAMP_YELLOW_PWM_PIN, HIGH);
+    yellow_l = pulseIn(BLINKER_LAMP_YELLOW_PWM_PIN, LOW);
+
+    if (night_h || white_h || yellow_h || 
+        night_l || white_l || yellow_l)
     {
-        BLINKER_LOG("NIGHT: ", high_in, ",", low_in);
+        BLINKER_LOG("NIGHT: ", night_h, ",", night_l);
+        BLINKER_LOG("WHITE: ", white_h, ",", white_l);
+        BLINKER_LOG("YELLOW: ", yellow_h, ",", yellow_l);
+
+        uint8_t n_set = 255;
+        uint8_t w_set = 0;
+        uint8_t y_set = 0;
+        
+        if (white_h || white_l)
+        {
+            w_set = white_h/(white_h + white_l) * 255;
+        }
+
+        if (yellow_h || yellow_l)
+        {
+            y_set = yellow_h/(yellow_h + yellow_l) * 255;
+        }
+
+        // setSunlight(255 << 16 || 255 << 8 || 255);
+
+        // setBrightness(100);
     }
 
     // touchTick();
     // batCheck();
 }
+
+/*
+ * 
+ * 
+ * 阅读模弝 
+ * n:0,0
+ * w:129,269
+ * y:129,360
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
