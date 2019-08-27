@@ -52,10 +52,15 @@ bool dataParse(const JsonObject & data)
     {
         String setData = data[BLINKER_CMD_SET];
 
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& setJson = jsonBuffer.parseObject(setData);
+        // DynamicJsonBuffer jsonBuffer;
+        // JsonObject& setJson = jsonBuffer.parseObject(setData);
 
-        if (!setJson.success())
+        DynamicJsonDocument jsonBuffer(1024);
+        DeserializationError error = deserializeJson(jsonBuffer, setData);
+        JsonObject setJson = jsonBuffer.as<JsonObject>();
+
+        // if (!setJson.success())
+        if (error)
         {
             return false;
         }
@@ -228,10 +233,15 @@ bool dataParse(const JsonObject & data)
     {
         String getData = data[BLINKER_CMD_GET];
 
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& getJson = jsonBuffer.parseObject(getData);
+        // DynamicJsonBuffer jsonBuffer;
+        // JsonObject& getJson = jsonBuffer.parseObject(getData);
 
-        if (!getJson.success())
+        DynamicJsonDocument jsonBuffer(1024);
+        DeserializationError error = deserializeJson(jsonBuffer, getData);
+        JsonObject getJson = jsonBuffer.as<JsonObject>();
+
+        // if (!getJson.success())
+        if (error)
         {
             return false;
         }
