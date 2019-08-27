@@ -11,6 +11,8 @@
 
 #define BLINKER_PRINT Serial
 #define BLINKER_PRO_ESP
+#define BLINKER_ALIGENIE_LIGHT
+#define BLINKER_DUEROS_LIGHT
 #define BLINKER_DEBUG_ALL
 
 #define BLINKER_BUTTON
@@ -47,7 +49,8 @@ String wsMode = BLINKER_CMD_COMMON;
 bool dataParse(const JsonObject & data)
 {
     String getData;
-    data.printTo(getData);
+    // data.printTo(getData);
+    serializeJson(data, getData);
     BLINKER_LOG("Get user command: ", getData);
 
     bool isParsed = false;
@@ -56,19 +59,24 @@ bool dataParse(const JsonObject & data)
     {
         String setData = data[BLINKER_CMD_SET];
 
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& setJson = jsonBuffer.parseObject(setData);
+        // DynamicJsonBuffer jsonBuffer;
+        // JsonObject& setJson = jsonBuffer.parseObject(setData);
 
-        if (!setJson.success())
+        DynamicJsonDocument jsonBuffer(1024);
+        DeserializationError error = deserializeJson(jsonBuffer, STRING_format(setData));
+        JsonObject setJson = jsonBuffer.as<JsonObject>();
+
+        // if (!setJson.success())
+        if (error)
         {
             return false;
         }
 
-        String set_mode = setJson[BLINKER_CMD_LAMP_MODE];
+        String set_mode = setJson[BLINKER_CMD_LAMP_MODE].as<String>();
 
         if (setJson.containsKey(BLINKER_CMD_SWITCH))
         {
-            String swData = setJson[BLINKER_CMD_SWITCH];
+            String swData = setJson[BLINKER_CMD_SWITCH].as<String>();
 
             if (swData == BLINKER_CMD_ON)
             {
@@ -232,10 +240,15 @@ bool dataParse(const JsonObject & data)
     {
         String getData = data[BLINKER_CMD_GET];
 
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& getJson = jsonBuffer.parseObject(getData);
+        // DynamicJsonBuffer jsonBuffer;
+        // JsonObject& getJson = jsonBuffer.parseObject(getData);
 
-        if (!getJson.success())
+        DynamicJsonDocument jsonBuffer(1024);
+        DeserializationError error = deserializeJson(jsonBuffer, STRING_format(getData));
+        JsonObject root = jsonBuffer.as<JsonObject>();
+
+        // if (!getJson.success())
+        if (error)
         {
             return false;
         }
